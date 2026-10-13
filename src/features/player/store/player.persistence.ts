@@ -1,4 +1,5 @@
 import type { PlayableTrack } from '@/features/songs/types/song.types'
+import { env } from '@/app/config/env'
 import {
   DEFAULT_VOLUME,
   PLAYER_STORAGE_KEY,
@@ -29,7 +30,11 @@ export function readPersistedPlayerState(): PersistedPlayerState | null {
     if (!raw) return null
     const value = JSON.parse(raw) as Partial<PersistedPlayerState>
     if (value.version !== PLAYER_STORAGE_VERSION || !Array.isArray(value.queue)) return null
-    const queue = value.queue.filter(isPlayableTrack)
+    const queue = value.queue.filter(isPlayableTrack).map((track) => ({
+      ...track,
+      queueItemId: crypto.randomUUID(),
+      playbackUrl: `${env.apiBaseUrl.replace(/\/$/, '')}/stream/song/${track.id}/play`,
+    }))
     const currentIndex =
       queue.length === 0
         ? -1

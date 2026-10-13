@@ -1,0 +1,8 @@
+node_modules
+dist
+.git
+.sites-runtime
+*.log
+.env
+.env.*
+!.env.example

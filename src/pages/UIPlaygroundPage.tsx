@@ -60,11 +60,11 @@ export function UIPlaygroundPage() {
             Display / Space Grotesk
           </span>
           <strong className="brand-type" style={{ fontSize: '2.8rem', lineHeight: 1 }}>
-            Chúng Ta Của Tương Lai
+            Future Us
           </strong>
           <strong style={{ fontSize: '1.4rem' }}>Blinding Lights</strong>
           <span className="secondary">The Weeknd · After Hours · 2020</span>
-          <span className="muted">Một Bước Yêu Vạn Dặm Đau — title overflow ready</span>
+          <span className="muted">One Step of Love, Miles of Pain — title overflow ready</span>
         </div>
       </section>
       <section className="playground-section">
@@ -76,16 +76,16 @@ export function UIPlaygroundPage() {
           <Button variant="danger">Danger</Button>
           <Button loading>Loading</Button>
           <Button disabled>Disabled</Button>
-          <IconButton label="Phát">
+          <IconButton label="Play">
             <Play size={18} />
           </IconButton>
-          <IconButton label="Yêu thích" active>
+          <IconButton label="Like" active>
             <Heart size={18} />
           </IconButton>
-          <IconButton label="Âm lượng">
+          <IconButton label="Volume">
             <Volume2 size={18} />
           </IconButton>
-          <IconButton label="Thêm tùy chọn">
+          <IconButton label="More options">
             <MoreHorizontal size={18} />
           </IconButton>
         </div>
@@ -115,7 +115,7 @@ export function UIPlaygroundPage() {
         <h2>Avatar, badge & artwork</h2>
         <div className="playground-surface">
           <Avatar src={profileImage} alt="Aether Curates" fallback="AC" size="sm" />
-          <Avatar fallback="NH" alt="Nguyễn Hà" />
+          <Avatar fallback="NH" alt="Nguyen Ha" />
           <Avatar fallback="TW" alt="The Weeknd" size="lg" />
           <Badge>Album</Badge>
           <Badge accent>New</Badge>
@@ -162,8 +162,8 @@ export function UIPlaygroundPage() {
               {
                 id: '2',
                 index: 2,
-                title: 'Có Chắc Yêu Là Đây',
-                artist: 'Sơn Tùng M-TP',
+                title: 'Is This Love',
+                artist: 'Son Tung M-TP',
                 album: 'Single',
                 date: '1 week ago',
                 duration: '3:22',

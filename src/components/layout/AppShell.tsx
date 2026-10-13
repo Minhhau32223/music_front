@@ -1,5 +1,7 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Outlet, useLocation, useNavigationType } from 'react-router-dom'
+import { OfflineBanner } from '@/components/shared/OfflineBanner'
+import { RouteErrorBoundary } from '@/components/shared/RouteErrorBoundary'
 import { GlobalPlayer, QueuePanel, usePlayerStore } from '@/features/player'
 import { MobileNavigation } from './MobileNavigation'
 import { Sidebar } from './Sidebar'
@@ -23,17 +25,35 @@ export function AppShell() {
     }
   }, [location.key, navigationType])
 
+  useEffect(() => {
+    const routeTitle = getRouteTitle(location.pathname)
+    document.title = `${routeTitle} — NOCTURNE`
+    const frame = window.requestAnimationFrame(() =>
+      mainRef.current?.focus({ preventScroll: true }),
+    )
+    return () => window.cancelAnimationFrame(frame)
+  }, [location.pathname])
+
   return (
     <div
       className={`app-shell${collapsed ? ' sidebar-collapsed' : ''}${
         queueOpen ? ' queue-panel-open' : ' queue-panel-closed'
       }`}
     >
+      <a className="skip-link" href="#main-content">
+        Skip to main content
+      </a>
       <Sidebar collapsed={collapsed} onToggle={() => setCollapsed((value) => !value)} />
       <div className="workspace">
         <TopBar />
-        <main ref={mainRef} className="main-scroll" id="main-content">
-          <Outlet />
+        <OfflineBanner />
+        <p className="sr-only" aria-live="polite" aria-atomic="true">
+          {getRouteTitle(location.pathname)} page
+        </p>
+        <main ref={mainRef} className="main-scroll" id="main-content" tabIndex={-1}>
+          <RouteErrorBoundary key={location.key}>
+            <Outlet />
+          </RouteErrorBoundary>
         </main>
       </div>
       <QueuePanel />
@@ -41,4 +61,20 @@ export function AppShell() {
       <MobileNavigation />
     </div>
   )
+}
+
+function getRouteTitle(pathname: string) {
+  if (pathname === '/home') return 'Home'
+  if (pathname === '/search') return 'Search'
+  if (pathname === '/studio') return 'Artist Studio'
+  if (pathname === '/admin') return 'Moderation'
+  if (pathname === '/artist-application') return 'Artist application'
+  if (pathname === '/profile') return 'Profile'
+  if (pathname === '/discover') return 'Discover'
+  if (pathname.startsWith('/library')) return 'Your library'
+  if (pathname.startsWith('/artist')) return 'Artist'
+  if (pathname.startsWith('/album')) return 'Album'
+  if (pathname.startsWith('/song')) return 'Song'
+  if (pathname.startsWith('/playlist')) return 'Playlist'
+  return 'NOCTURNE'
 }

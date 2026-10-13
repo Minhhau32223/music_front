@@ -4,6 +4,7 @@ import type { PlayableTrack } from '../types/song.types'
 import { formatDuration } from '@/lib/format/duration'
 import type { Song } from '../types/song.types'
 import { Link } from 'react-router-dom'
+import { SongContextMenu } from '@/components/shared/SongContextMenu'
 
 type PopularSongListProps = {
   songs: Song[]
@@ -21,11 +22,12 @@ export function PopularSongList({
   return (
     <div className="popular-song-list" role="list">
       {songs.map((song, index) => {
-        const active = currentTrack?.id === song.id && currentTrack.audioUrl === song.audioUrl
+        const active = currentTrack?.id === song.id && currentTrack.playbackUrl === song.audioUrl
         const playing = active && playbackStatus === 'playing'
         const loading = active && (playbackStatus === 'loading' || playbackStatus === 'buffering')
         return (
           <article
+            data-song-surface
             className={`popular-song-row${active ? ' active-track' : ''}`}
             role="listitem"
             key={song.id}
@@ -33,7 +35,7 @@ export function PopularSongList({
             <button
               className="popular-play-button"
               type="button"
-              aria-label={playing || loading ? `Tạm dừng ${song.title}` : `Phát ${song.title}`}
+              aria-label={playing || loading ? `Pause ${song.title}` : `Play ${song.title}`}
               onClick={() => onPlay(index)}
             >
               <span className="popular-rank">{String(index + 1).padStart(2, '0')}</span>
@@ -65,6 +67,7 @@ export function PopularSongList({
               )}
             </span>
             <span className="popular-duration">{formatDuration(song.durationMs)}</span>
+            <SongContextMenu song={song} onPlayNow={() => onPlay(index)} />
           </article>
         )
       })}

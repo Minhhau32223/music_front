@@ -30,15 +30,15 @@ export function DeletePlaylistDialog({
     <Modal
       open={open}
       onClose={() => !remove.isPending && onClose()}
-      title="Xóa playlist?"
-      description={`“${playlist.name}” sẽ bị xóa khỏi thư viện. Hàng đợi đang phát không bị thay đổi.`}
+      title="Delete playlist?"
+      description={`“${playlist.name}” will be removed from your library. The current queue will not change.`}
     >
       <div className="modal-actions">
         <Button variant="ghost" disabled={remove.isPending} onClick={onClose}>
-          Hủy
+          Cancel
         </Button>
         <Button variant="danger" loading={remove.isPending} onClick={() => void confirm()}>
-          Xóa playlist
+          Delete playlist
         </Button>
       </div>
     </Modal>

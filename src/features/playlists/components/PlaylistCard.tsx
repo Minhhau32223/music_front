@@ -10,13 +10,13 @@ export function PlaylistCard({ playlist }: { playlist: PlaylistSummary }) {
         to={`/playlist/${playlist.id}`}
         aria-label={playlist.name}
       >
-        <Artwork src={playlist.artworkUrl} alt={`Ảnh playlist ${playlist.name}`} />
+        <Artwork src={playlist.artworkUrl} alt={`${playlist.name} playlist artwork`} />
       </Link>
       <Link className="card-title" to={`/playlist/${playlist.id}`} title={playlist.name}>
         {playlist.name}
       </Link>
       <div className="card-subtitle">
-        {playlist.trackCount === undefined ? 'Playlist' : `${playlist.trackCount} bài hát`}
+        {playlist.trackCount === undefined ? 'Playlist' : `${playlist.trackCount} songs`}
       </div>
     </article>
   )

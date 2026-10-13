@@ -6,4 +6,7 @@ export const songKeys = {
   detail: (id: number) => [...songKeys.all, 'detail', id] as const,
   latest: (limit: number) => [...songKeys.all, 'latest', { limit }] as const,
   popular: (limit: number) => [...songKeys.all, 'popular', { limit }] as const,
+  newReleases: (limit: number) => [...songKeys.all, 'new-releases', { limit }] as const,
+  personalized: (userId: number, limit: number) =>
+    [...songKeys.all, 'personalized', { userId, limit }] as const,
 }

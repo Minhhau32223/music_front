@@ -30,8 +30,8 @@ export function ProgressBar({ expanded = false }: { expanded?: boolean }) {
         step={1000}
         value={Math.min(shownTime, maximum)}
         disabled={durationMs <= 0}
-        aria-label="Tiến độ bài hát"
-        aria-valuetext={`${formatDuration(shownTime)} trên ${formatDuration(durationMs)}`}
+        aria-label="Song progress"
+        aria-valuetext={`${formatDuration(shownTime)} of ${formatDuration(durationMs)}`}
         style={{ '--range-progress': `${percent}%` } as CSSProperties}
         onPointerDown={(event) => {
           scrubbing.current = true

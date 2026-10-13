@@ -5,9 +5,9 @@ import type { ArtistDto } from '../types/artist.dto'
 import { songApi } from '@/features/songs/api/song.api'
 import type { AlbumSummary } from '@/features/albums/types/album.types'
 export const artistApi = {
-  async getArtists() {
+  async getArtists(signal?: AbortSignal) {
     try {
-      return (await apiClient.get<ArtistDto[]>('/artists/')).data.map(mapArtistDto)
+      return (await apiClient.get<ArtistDto[]>('/artists/', { signal })).data.map(mapArtistDto)
     } catch (error) {
       throw normalizeApiError(error)
     }

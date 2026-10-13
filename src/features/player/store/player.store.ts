@@ -117,10 +117,7 @@ const initialState: PlayerState & PlayerUiState & PlayerRuntimeState = restored
       currentIndex: restored.currentIndex,
       playbackStatus: restored.queue.length ? 'paused' : 'idle',
       currentTimeMs: restored.positionMs,
-      durationMs:
-        restored.currentIndex >= 0
-          ? safeDurationMs(restored.queue[restored.currentIndex]?.durationMs ?? 0)
-          : 0,
+      durationMs: 0,
       volume: restored.volume,
       previousVolume: restored.previousVolume,
       isMuted: restored.isMuted,
@@ -193,7 +190,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => {
     set({
       currentIndex: safeIndex,
       currentTimeMs: safePosition,
-      durationMs: safeDurationMs(track.durationMs),
+      durationMs: 0,
       playbackStatus: autoplay ? 'loading' : 'paused',
       error: null,
       shouldPlay: autoplay,
@@ -211,7 +208,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => {
       }
       set({
         playbackStatus: 'error',
-        error: { code: 'NETWORK_ERROR', message: 'Không có kết nối mạng.', trackId: track.id },
+        error: { code: 'NETWORK_ERROR', message: 'No network connection.', trackId: track.id },
         shouldPlay: false,
       })
       persist()
@@ -219,7 +216,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => {
     }
 
     try {
-      const generation = audioEngine.loadSource(track.audioUrl)
+      const generation = audioEngine.loadSource(track.playbackUrl)
       audioEngine.setVolume(get().volume)
       audioEngine.setMuted(get().isMuted)
       set({ activeGeneration: generation })
@@ -289,7 +286,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => {
       const track = currentTrack(get())
       if (!track) return
       try {
-        const generation = audioEngine.loadSource(track.audioUrl)
+        const generation = audioEngine.loadSource(track.playbackUrl)
         set({
           activeGeneration: generation,
           playbackStatus: 'paused',
@@ -308,7 +305,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => {
       if (!isPlayableTrack(track)) {
         set({
           playbackStatus: 'error',
-          error: { code: 'AUDIO_SOURCE_UNAVAILABLE', message: 'Bài hát chưa có nguồn âm thanh.' },
+          error: { code: 'AUDIO_SOURCE_UNAVAILABLE', message: 'This song has no audio source.' },
         })
         return
       }
@@ -318,7 +315,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => {
         return
       }
       set({
-        queue: [track],
+        queue: [{ ...track, queueItemId: crypto.randomUUID() }],
         currentIndex: 0,
         shuffleOrder: state.shuffleEnabled ? [0] : [],
         shufflePosition: state.shuffleEnabled ? 0 : -1,
@@ -388,7 +385,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => {
         audioEngine.seek(0)
         set({ currentTimeMs: 0 })
       }
-      if (audioEngine.getSourceUrl() !== track.audioUrl) {
+      if (audioEngine.getSourceUrl() !== track.playbackUrl) {
         activateIndex(state.currentIndex, true, get().currentTimeMs)
         return
       }
@@ -437,7 +434,11 @@ export const usePlayerStore = create<PlayerStore>((set, get) => {
 
     seek: (positionMs) => {
       const state = get()
-      if (!currentTrack(state)) return
+      if (!currentTrack(state) || !Number.isFinite(positionMs)) return
+      if (state.durationMs <= 0) {
+        set({ pendingSeekMs: Math.max(0, positionMs) })
+        return
+      }
       const maximum = state.durationMs > 0 ? state.durationMs : Math.max(0, positionMs)
       const position = clamp(positionMs, 0, maximum)
       audioEngine.seek(position)
@@ -488,7 +489,8 @@ export const usePlayerStore = create<PlayerStore>((set, get) => {
       persist()
     },
 
-    addToQueue: (track) => {
+    addToQueue: (input) => {
+      const track = { ...input, queueItemId: crypto.randomUUID() }
       if (!isPlayableTrack(track)) return
       const state = get()
       if (state.queue.length === 0) {
@@ -505,7 +507,8 @@ export const usePlayerStore = create<PlayerStore>((set, get) => {
       persist()
     },
 
-    playNext: (track) => {
+    playNext: (input) => {
+      const track = { ...input, queueItemId: crypto.randomUUID() }
       if (!isPlayableTrack(track)) return
       const state = get()
       if (state.queue.length === 0) {
@@ -663,7 +666,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => {
       if (
         !track ||
         event.generation !== state.activeGeneration ||
-        event.sourceUrl !== track.audioUrl
+        event.sourceUrl !== track.playbackUrl
       ) {
         return
       }
@@ -674,10 +677,10 @@ export const usePlayerStore = create<PlayerStore>((set, get) => {
           break
         case 'loadedmetadata':
         case 'durationchange': {
-          const duration = safeDurationMs(event.durationMs) || safeDurationMs(track.durationMs)
+          const duration = safeDurationMs(event.durationMs)
           set({ durationMs: duration })
           const pendingSeek = get().pendingSeekMs
-          if (pendingSeek != null) {
+          if (pendingSeek != null && duration > 0) {
             const position = duration > 0 ? clamp(pendingSeek, 0, duration) : pendingSeek
             audioEngine.seek(position)
             set({ currentTimeMs: position, pendingSeekMs: null })

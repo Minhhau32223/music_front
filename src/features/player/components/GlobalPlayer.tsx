@@ -2,6 +2,7 @@ import { ExpandedPlayer } from './ExpandedPlayer'
 import { MiniPlayer } from './MiniPlayer'
 import { PlayerBar } from './PlayerBar'
 import { PlayerRuntime } from './PlayerRuntime'
+import { LyricsPanel } from './LyricsPanel'
 
 export function GlobalPlayer() {
   return (
@@ -10,6 +11,7 @@ export function GlobalPlayer() {
       <PlayerBar />
       <MiniPlayer />
       <ExpandedPlayer />
+      <LyricsPanel />
     </>
   )
 }

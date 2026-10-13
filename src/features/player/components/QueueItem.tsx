@@ -2,6 +2,7 @@ import { ListPlus, Play, X } from 'lucide-react'
 import { IconButton } from '@/components/ui/IconButton'
 import type { PlayableTrack } from '@/features/songs/types/song.types'
 import { Artwork } from '@/components/shared/Artwork'
+import { TrackActions } from './TrackActions'
 
 type QueueItemProps = {
   track: PlayableTrack
@@ -13,7 +14,7 @@ type QueueItemProps = {
 
 export function QueueItem({ track, current, onPlay, onPlayNext, onRemove }: QueueItemProps) {
   return (
-    <article className={`player-queue-item${current ? ' current' : ''}`}>
+    <article data-song-surface className={`player-queue-item${current ? ' current' : ''}`}>
       <div className="queue-item-art">
         <Artwork src={track.artworkUrl} alt={`${track.title} artwork`} />
       </div>
@@ -22,17 +23,18 @@ export function QueueItem({ track, current, onPlay, onPlayNext, onRemove }: Queu
         <span title={track.artistName}>{track.artistName}</span>
       </div>
       <div className="queue-item-actions">
+        <TrackActions track={track} context="queue" onPlay={onPlay} onPlayNext={onPlayNext} />
         {onPlay && (
-          <IconButton label={`Phát ${track.title} ngay`} onClick={onPlay}>
+          <IconButton label={`Play ${track.title} now`} onClick={onPlay}>
             <Play size={15} fill="currentColor" />
           </IconButton>
         )}
         {onPlayNext && (
-          <IconButton label={`Phát ${track.title} tiếp theo`} onClick={onPlayNext}>
+          <IconButton label={`Play ${track.title} next`} onClick={onPlayNext}>
             <ListPlus size={15} />
           </IconButton>
         )}
-        <IconButton label={`Xóa ${track.title} khỏi hàng đợi`} onClick={onRemove}>
+        <IconButton label={`Remove ${track.title} from queue`} onClick={onRemove}>
           <X size={15} />
         </IconButton>
       </div>

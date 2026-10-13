@@ -1,16 +1,16 @@
-import { Home, Library, Search, UserRound } from 'lucide-react'
+import { Compass, Home, Library, Search } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 
 const items = [
   { to: '/home', label: 'Home', icon: Home },
   { to: '/search', label: 'Search', icon: Search },
+  { to: '/discover', label: 'Discover', icon: Compass },
   { to: '/library', label: 'Library', icon: Library },
-  { to: '/profile', label: 'Profile', icon: UserRound },
 ]
 
 export function MobileNavigation() {
   return (
-    <nav className="mobile-nav" aria-label="Điều hướng di động">
+    <nav className="mobile-nav" aria-label="Mobile navigation">
       {items.map(({ to, label, icon: Icon }) => (
         <NavLink
           key={to}

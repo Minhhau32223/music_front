@@ -2,7 +2,9 @@ import type { PlayableTrack } from '@/features/songs/types/song.types'
 import { isPlayableTrack } from './playback.utils'
 
 export function sanitizeQueue(tracks: PlayableTrack[]) {
-  return tracks.filter(isPlayableTrack)
+  return tracks
+    .filter(isPlayableTrack)
+    .map((track) => ({ ...track, queueItemId: crypto.randomUUID() }))
 }
 
 export function clampQueueIndex(length: number, requestedIndex = 0) {

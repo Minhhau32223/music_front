@@ -31,6 +31,8 @@ export const authApi = {
       async () => (await sessionClient.post<AccessTokenResponse>('/auth/refresh/')).data,
     ),
   logout: () => withNormalizedError(async () => void (await sessionClient.post('/auth/logout/'))),
-  getCurrentUser: () =>
-    withNormalizedError(async () => (await apiClient.get<CurrentUser>('/users/me/')).data),
+  getCurrentUser: (signal?: AbortSignal) =>
+    withNormalizedError(
+      async () => (await apiClient.get<CurrentUser>('/users/me/', { signal })).data,
+    ),
 }

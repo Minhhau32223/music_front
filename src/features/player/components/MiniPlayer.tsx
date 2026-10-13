@@ -23,19 +23,19 @@ export function MiniPlayer() {
     <div
       className="mobile-mini-player"
       role="group"
-      aria-label="Trình phát thu gọn"
+      aria-label="Mini player"
       onClick={() => track && setExpanded(true)}
     >
       <span className="mini-player-progress" style={{ width: `${progress}%` }} />
       <div className="mini-player-art">
-        <Artwork src={track?.artworkUrl} alt={track ? `${track.title} artwork` : ''} />
+        <Artwork src={track?.artworkUrl} alt={track ? `${track.title} artwork` : ''} size="xs" />
       </div>
       <div className="mini-player-copy">
-        <strong>{track?.title ?? 'Chọn một bài hát'}</strong>
+        <strong>{track?.title ?? 'Select a song'}</strong>
         <span>{track?.artistName ?? 'NOCTURNE'}</span>
       </div>
       <IconButton
-        label={playing || busy ? 'Tạm dừng' : 'Phát'}
+        label={playing || busy ? 'Pause' : 'Play'}
         disabled={!track}
         tooltip={false}
         onClick={(event) => {
@@ -52,7 +52,7 @@ export function MiniPlayer() {
         )}
       </IconButton>
       <IconButton
-        label="Bài tiếp"
+        label="Next song"
         disabled={!track}
         tooltip={false}
         onClick={(event) => {

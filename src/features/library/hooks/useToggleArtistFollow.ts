@@ -35,7 +35,7 @@ export function useToggleArtistFollow(artist: ArtistSummary) {
     },
     onError: (_error, _targetFollowed, context) => {
       queryClient.setQueryData(libraryKeys.followedArtists(), context?.previous ?? [])
-      showToast('Không thể cập nhật nghệ sĩ theo dõi. Thay đổi đã được hoàn tác.', 'error')
+      showToast('Unable to update followed artists. Your change was reverted.', 'error')
     },
     onSettled: () =>
       void queryClient.invalidateQueries({ queryKey: libraryKeys.followedArtists() }),

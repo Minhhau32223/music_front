@@ -1,13 +1,15 @@
 import { Artwork } from '@/components/shared/Artwork'
 import type { PlayableTrack } from '@/features/songs/types/song.types'
 import { Link } from 'react-router-dom'
+import { TrackActions } from './TrackActions'
 
 export function TrackInfo({ track }: { track: PlayableTrack | null }) {
   return (
-    <div className="player-track-info">
+    <div className="player-track-info" data-song-surface>
       <div className="player-track-art">
         <Artwork src={track?.artworkUrl} alt={track ? `${track.title} artwork` : ''} />
       </div>
+      {track && <TrackActions track={track} />}
       <div className="player-track-copy">
         {track ? (
           <>
@@ -26,7 +28,7 @@ export function TrackInfo({ track }: { track: PlayableTrack | null }) {
           </>
         ) : (
           <>
-            <strong>Chọn một bài hát</strong>
+            <strong>Select a song</strong>
             <span>NOCTURNE</span>
           </>
         )}

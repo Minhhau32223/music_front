@@ -62,13 +62,13 @@ export function AlbumPage() {
             <Button size="lg" className="hero-play">
               <Play size={17} fill="currentColor" /> Play
             </Button>
-            <IconButton label="Lưu album" className="button secondary-variant icon">
+            <IconButton label="Save album" className="button secondary-variant icon">
               <Heart size={19} />
             </IconButton>
-            <IconButton label="Tải xuống" className="button secondary-variant icon">
+            <IconButton label="Download" className="button secondary-variant icon">
               <Download size={19} />
             </IconButton>
-            <IconButton label="Tùy chọn khác" className="button secondary-variant icon">
+            <IconButton label="More options" className="button secondary-variant icon">
               <MoreHorizontal size={19} />
             </IconButton>
           </div>

@@ -64,7 +64,7 @@ describe('Phase 6 optimistic mutations', () => {
       { id: 4, name: 'Focus', ownerId: 7 },
     ])
     usePlayerStore.setState({
-      queue: [{ ...song, artistId: 2, artistName: 'Nocturne' }],
+      queue: [{ ...song, artistId: 2, artistName: 'Nocturne', playbackUrl: song.audioUrl }],
       currentIndex: 0,
       playbackStatus: 'paused',
     })
@@ -75,7 +75,7 @@ describe('Phase 6 optimistic mutations', () => {
     act(() => result.current.mutate(3))
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
     expect(usePlayerStore.getState().queue).toEqual([
-      expect.objectContaining({ id: 9, audioUrl: 'after-midnight.mp3' }),
+      expect.objectContaining({ id: 9, playbackUrl: 'after-midnight.mp3' }),
     ])
     expect(cancelQueries).toHaveBeenCalledWith({ queryKey: playlistKeys.detail(3) })
   })

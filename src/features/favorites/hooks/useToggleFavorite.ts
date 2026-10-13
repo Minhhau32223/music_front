@@ -41,7 +41,7 @@ export function useToggleFavorite(song: Song) {
     onError: (_error, _targetLiked, context) => {
       if (context && latestIntent.get(song.id) === context.version) {
         queryClient.setQueryData(favoriteKeys.songs(), context.previous)
-        showToast('Không thể cập nhật bài hát yêu thích. Thay đổi đã được hoàn tác.', 'error')
+        showToast('Unable to update liked songs. Your change was reverted.', 'error')
       }
     },
     onSettled: (_data, _error, _targetLiked, context) => {

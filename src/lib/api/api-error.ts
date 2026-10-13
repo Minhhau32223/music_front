@@ -3,12 +3,14 @@ import axios from 'axios'
 export type ApiError = {
   status: number
   code?: string
+  requestId?: string
   message: string
   fieldErrors?: Record<string, string>
   kind: 'auth' | 'network' | 'validation' | 'server' | 'unknown'
 }
 
 type ErrorEnvelope = {
+  requestId?: string
   message?: string
   code?: string
   errors?: Record<string, string>
@@ -50,6 +52,7 @@ export function normalizeApiError(error: unknown): ApiError {
   return {
     status,
     code: payload?.code,
+    requestId: payload?.requestId ?? error.response.headers?.['x-request-id'],
     message:
       safeBackendMessage ??
       messages[status] ??

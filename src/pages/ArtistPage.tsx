@@ -29,7 +29,7 @@ export function ArtistPage() {
   return (
     <div className="page">
       <section className="artist-hero">
-        <img src={hero} alt="The Weeknd biểu diễn trên sân khấu" />
+        <img src={hero} alt="The Weeknd performing on stage" />
         <span className="caption" style={{ color: 'var(--accent-secondary)' }}>
           ◉ Verified artist
         </span>
@@ -44,7 +44,7 @@ export function ArtistPage() {
           <Button size="lg" variant="secondary">
             <Check size={17} /> Following
           </Button>
-          <IconButton label="Tùy chọn khác" className="button secondary-variant icon">
+          <IconButton label="More options" className="button secondary-variant icon">
             <MoreHorizontal size={19} />
           </IconButton>
         </div>

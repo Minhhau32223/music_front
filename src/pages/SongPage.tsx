@@ -18,9 +18,12 @@ import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 import { isApiError } from '@/lib/api/api-error'
 import { formatDuration } from '@/lib/format/duration'
 import { parseEntityId } from '@/lib/route-params'
+import { useLyricsStore } from '@/features/player/store/lyrics.store'
+import { useAuthStore } from '@/features/auth/store/auth.store'
 
 export function SongPage() {
   const [playlistPickerOpen, setPlaylistPickerOpen] = useState(false)
+  const guest = useAuthStore((s) => s.status === 'unauthenticated')
   const songId = parseEntityId(useParams().songId)
   const song = useSongDetail(songId)
   const currentTrack = usePlayerStore(selectCurrentTrack)
@@ -29,12 +32,12 @@ export function SongPage() {
   const active =
     Boolean(song.data) &&
     currentTrack?.id === song.data?.id &&
-    currentTrack?.audioUrl === song.data?.audioUrl
+    currentTrack?.playbackUrl === song.data?.audioUrl
   const playing = active && (status === 'playing' || status === 'loading' || status === 'buffering')
-  useDocumentTitle(song.data?.title ?? 'Bài hát')
+  useDocumentTitle(song.data?.title ?? 'Song')
 
   if (songId === null || (song.isError && isApiError(song.error) && song.error.status === 404)) {
-    return <DetailNotFoundState entity="bài hát" />
+    return <DetailNotFoundState entity="song" />
   }
   if (song.isLoading) return <DetailPageSkeleton />
   if (song.isError || !song.data) {
@@ -51,13 +54,13 @@ export function SongPage() {
         <div className="detail-cover song-detail-cover">
           <Artwork
             src={song.data.artworkUrl ?? song.data.album?.artworkUrl}
-            alt={`Ảnh bài hát ${song.data.title}`}
+            alt={`${song.data.title} artwork`}
             loading="eager"
             fetchPriority="high"
           />
         </div>
         <div className="detail-hero-copy">
-          <span className="caption detail-eyebrow">Bài hát</span>
+          <span className="caption detail-eyebrow">Song</span>
           <h1>{song.data.title}</h1>
           <p className="detail-meta">
             <Link to={`/artist/${song.data.artist.id}`}>{song.data.artist.name}</Link>
@@ -71,23 +74,34 @@ export function SongPage() {
             <span>{formatDuration(song.data.durationMs)}</span>
           </p>
           <div className="hero-actions song-detail-actions">
+            <Button
+              variant="secondary"
+              onClick={() => useLyricsStore.getState().open(song.data.id)}
+            >
+              Lyrics
+            </Button>
             <Button size="lg" onClick={() => playTrack(track)}>
               {playing ? (
                 <Pause size={17} fill="currentColor" />
               ) : (
                 <Play size={17} fill="currentColor" />
               )}
-              {playing ? 'Tạm dừng' : 'Phát'}
+              {playing ? 'Pause' : 'Play'}
             </Button>
             <Button variant="secondary" size="lg" onClick={() => playNext(track)}>
-              <ListEnd size={17} /> <span>Phát tiếp theo</span>
+              <ListEnd size={17} /> <span>Play next</span>
             </Button>
             <Button variant="ghost" size="lg" onClick={() => addToQueue(track)}>
-              <ListPlus size={17} /> <span>Thêm vào hàng đợi</span>
+              <ListPlus size={17} /> <span>Add to queue</span>
             </Button>
             <LikeButton song={song.data} showLabel className="song-page-like" />
-            <Button variant="ghost" size="lg" onClick={() => setPlaylistPickerOpen(true)}>
-              <ListMusic size={17} /> <span>Thêm vào playlist</span>
+            <Button
+              variant="ghost"
+              size="lg"
+              disabled={guest}
+              onClick={() => setPlaylistPickerOpen(true)}
+            >
+              <ListMusic size={17} /> <span>Add to playlist</span>
             </Button>
           </div>
         </div>
@@ -97,12 +111,12 @@ export function SongPage() {
         <div className="section-heading">
           <div className="section-title-wrap">
             <span className="caption section-kicker">01 // Metadata</span>
-            <h2 id="song-info-heading">Thông tin bài hát</h2>
+            <h2 id="song-info-heading">Song information</h2>
           </div>
         </div>
         <dl className="song-metadata-grid">
           <div>
-            <dt>Nghệ sĩ</dt>
+            <dt>Artist</dt>
             <dd>
               <Link to={`/artist/${song.data.artist.id}`}>{song.data.artist.name}</Link>
             </dd>
@@ -116,11 +130,11 @@ export function SongPage() {
             </div>
           )}
           <div>
-            <dt>Thời lượng</dt>
+            <dt>Duration</dt>
             <dd>{formatDuration(song.data.durationMs)}</dd>
           </div>
           <div>
-            <dt>Lượt nghe</dt>
+            <dt>Plays</dt>
             <dd>{new Intl.NumberFormat('vi-VN').format(song.data.playCount)}</dd>
           </div>
         </dl>

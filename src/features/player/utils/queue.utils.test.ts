@@ -7,7 +7,7 @@ const track = (id: number): PlayableTrack => ({
   title: `Track ${id}`,
   artistId: 1,
   artistName: 'Nocturne',
-  audioUrl: `https://audio.test/${id}.mp3`,
+  playbackUrl: `https://audio.test/${id}.mp3`,
   durationMs: 180_000,
 })
 
@@ -32,6 +32,8 @@ describe('queue utilities', () => {
   })
 
   it('discards invalid persisted or external tracks', () => {
-    expect(sanitizeQueue([track(1), { ...track(2), audioUrl: '' }])).toEqual([track(1)])
+    expect(sanitizeQueue([track(1), { ...track(2), playbackUrl: '' }])).toMatchObject([track(1)])
+    const duplicate = sanitizeQueue([track(1), track(1)])
+    expect(duplicate[0].queueItemId).not.toBe(duplicate[1].queueItemId)
   })
 })

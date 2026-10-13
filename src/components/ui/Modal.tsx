@@ -2,6 +2,7 @@ import { X } from 'lucide-react'
 import { useEffect, useId, useRef, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { IconButton } from './IconButton'
+import { motion, AnimatePresence } from 'framer-motion'
 
 type ModalProps = {
   open: boolean
@@ -60,31 +61,45 @@ export function Modal({ open, title, description, onClose, children }: ModalProp
     }
   }, [open])
 
-  if (!open) return null
-
   return createPortal(
-    <div className="modal-backdrop" role="presentation" onMouseDown={onClose}>
-      <div
-        ref={panelRef}
-        className="modal-panel"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        aria-describedby={description ? descriptionId : undefined}
-        onMouseDown={(event) => event.stopPropagation()}
-      >
-        <div className="modal-heading">
-          <div>
-            <h2 id={titleId}>{title}</h2>
-            {description && <p id={descriptionId}>{description}</p>}
-          </div>
-          <IconButton label="Đóng" tooltip={false} onClick={onClose}>
-            <X size={18} />
-          </IconButton>
-        </div>
-        {children}
-      </div>
-    </div>,
+    <AnimatePresence>
+      {open && (
+        <motion.div 
+          className="modal-backdrop" 
+          role="presentation" 
+          onMouseDown={onClose}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <motion.div
+            ref={panelRef}
+            className="modal-panel"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={titleId}
+            aria-describedby={description ? descriptionId : undefined}
+            onMouseDown={(event) => event.stopPropagation()}
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          >
+            <div className="modal-heading">
+              <div>
+                <h2 id={titleId}>{title}</h2>
+                {description && <p id={descriptionId}>{description}</p>}
+              </div>
+              <IconButton label="Close" tooltip={false} onClick={onClose}>
+                <X size={18} />
+              </IconButton>
+            </div>
+            {children}
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>,
     document.body,
   )
 }

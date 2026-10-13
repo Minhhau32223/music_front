@@ -31,13 +31,13 @@ export function ArtistDetailPage() {
   const releases = useArtistReleases(artistId)
   const { playQueue } = usePlayer()
   const playableTracks = useMemo(() => tracks.data?.map(toPlayableTrack) ?? [], [tracks.data])
-  useDocumentTitle(artist.data?.name ?? 'Nghệ sĩ')
+  useDocumentTitle(artist.data?.name ?? 'Artist')
 
   if (
     artistId === null ||
     (artist.isError && isApiError(artist.error) && artist.error.status === 404)
   ) {
-    return <DetailNotFoundState entity="nghệ sĩ" />
+    return <DetailNotFoundState entity="artist" />
   }
   if (artist.isLoading) return <DetailPageSkeleton />
   if (artist.isError || !artist.data) {
@@ -60,14 +60,14 @@ export function ArtistDetailPage() {
         <div className="artist-detail-portrait">
           <Artwork
             src={artist.data.imageUrl}
-            alt={`Chân dung ${artist.data.name}`}
+            alt={`${artist.data.name} portrait`}
             shape="artist"
             loading="eager"
             fetchPriority="high"
           />
         </div>
         <div className="detail-hero-copy">
-          <span className="caption detail-eyebrow">Nghệ sĩ</span>
+          <span className="caption detail-eyebrow">Artist</span>
           <h1>{artist.data.name}</h1>
           <div className="hero-actions">
             <Button
@@ -75,7 +75,7 @@ export function ArtistDetailPage() {
               disabled={!playableTracks.length}
               onClick={() => playQueue(playableTracks, 0)}
             >
-              <Play size={17} fill="currentColor" /> Phát
+              <Play size={17} fill="currentColor" /> Play
             </Button>
             <FollowButton artist={artist.data} />
           </div>
@@ -85,15 +85,15 @@ export function ArtistDetailPage() {
       <section className="section detail-section" aria-labelledby="artist-popular-heading">
         <div className="section-heading">
           <div className="section-title-wrap">
-            <span className="caption section-kicker">01 // Theo lượt nghe</span>
-            <h2 id="artist-popular-heading">Phổ biến</h2>
+            <span className="caption section-kicker">01 // Most played</span>
+            <h2 id="artist-popular-heading">Popular</h2>
           </div>
         </div>
         <DetailSectionState
           loading={tracks.isLoading}
           error={tracks.isError}
           empty={!tracks.data?.length}
-          emptyMessage="Nghệ sĩ này chưa có bài hát."
+          emptyMessage="This artist has no songs yet."
           onRetry={() => void tracks.refetch()}
         />
         {tracks.data?.length ? <DetailTrackList songs={tracks.data} context="artist" /> : null}
@@ -102,15 +102,15 @@ export function ArtistDetailPage() {
       <section className="section detail-section" aria-labelledby="artist-releases-heading">
         <div className="section-heading">
           <div className="section-title-wrap">
-            <span className="caption section-kicker">02 // Tuyển tập</span>
-            <h2 id="artist-releases-heading">Phát hành</h2>
+            <span className="caption section-kicker">02 // Releases</span>
+            <h2 id="artist-releases-heading">Albums from uploaded songs</h2>
           </div>
         </div>
         <DetailSectionState
           loading={releases.isLoading}
           error={releases.isError}
           empty={!releases.data?.length}
-          emptyMessage="Nghệ sĩ này chưa có album."
+          emptyMessage="No albums found in uploaded songs."
           onRetry={() => void releases.refetch()}
         />
         {releases.data?.length ? (
@@ -126,8 +126,8 @@ export function ArtistDetailPage() {
         <section className="section detail-section" aria-labelledby="artist-about-heading">
           <div className="section-heading">
             <div className="section-title-wrap">
-              <span className="caption section-kicker">03 // Hồ sơ</span>
-              <h2 id="artist-about-heading">Giới thiệu</h2>
+              <span className="caption section-kicker">03 // Profile</span>
+              <h2 id="artist-about-heading">About</h2>
             </div>
           </div>
           <div className="detail-description-card">

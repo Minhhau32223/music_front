@@ -1,13 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
-import { favoriteApi } from '../api/favorite.api'
-import { favoriteKeys } from '../queries/favorite.query-keys'
-
+import { favoriteQuery } from '@/features/library/queries/private.queries'
+import { useAuthStore } from '@/features/auth/store/auth.store'
 export function useLikedSongs() {
-  return useQuery({
-    queryKey: favoriteKeys.songs(),
-    queryFn: ({ signal }) => favoriteApi.getLikedSongs(signal),
-    staleTime: 60_000,
-    gcTime: 1_800_000,
-    retry: 1,
-  })
+  const guest = useAuthStore((s) => s.status === 'unauthenticated')
+  return useQuery({ ...favoriteQuery(), enabled: !guest })
 }

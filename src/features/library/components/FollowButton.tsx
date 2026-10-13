@@ -3,10 +3,12 @@ import { Button } from '@/components/ui/Button'
 import type { ArtistSummary } from '@/features/artists/types/artist.types'
 import { useFollowedArtists } from '../hooks/useFollowedArtists'
 import { useToggleArtistFollow } from '../hooks/useToggleArtistFollow'
+import { useAuthStore } from '@/features/auth/store/auth.store'
 
 export function FollowButton({ artist }: { artist: ArtistSummary }) {
   const followedArtists = useFollowedArtists()
   const toggle = useToggleArtistFollow(artist)
+  const guest = useAuthStore((s) => s.status === 'unauthenticated')
   const followed = followedArtists.data?.some((item) => item.id === artist.id) ?? false
 
   return (
@@ -14,12 +16,12 @@ export function FollowButton({ artist }: { artist: ArtistSummary }) {
       variant="secondary"
       size="lg"
       loading={toggle.isPending}
-      disabled={followedArtists.isLoading || followedArtists.isError}
+      disabled={guest || followedArtists.isLoading || followedArtists.isError}
       aria-pressed={followed}
       onClick={() => toggle.mutate(!followed)}
     >
       {followed ? <UserCheck size={17} /> : <UserPlus size={17} />}
-      {followed ? 'Đang theo dõi' : 'Theo dõi'}
+      {followed ? 'Following' : 'Follow'}
     </Button>
   )
 }

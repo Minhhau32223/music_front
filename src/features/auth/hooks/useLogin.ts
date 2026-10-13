@@ -9,15 +9,14 @@ export function useLogin() {
 
   return useMutation({
     mutationFn: authApi.login,
-    onSuccess: (session) => {
+    onSuccess: async (session) => {
+      queryClient.clear()
       setSession(session.accessToken)
-      queryClient.setQueryData(currentUserQueryKey, {
-        id: session.id,
-        username: session.username,
-        email: session.email,
-        active: true,
-        role: 'USER',
-        avatarUrl: null,
+      await queryClient.fetchQuery({
+        queryKey: currentUserQueryKey,
+        queryFn: ({ signal }) => authApi.getCurrentUser(signal),
+        staleTime: 120_000,
+        retry: false,
       })
     },
   })

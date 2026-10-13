@@ -9,6 +9,8 @@ export type Song = {
   artist: ArtistSummary
   album?: AlbumSummary
   playCount: number
+  lyrics?: string
+  backendDuration?: string
 }
 export type SongDetail = Song
 export type SongListParams = {
@@ -20,6 +22,7 @@ export type SongListParams = {
   albumId?: number
 }
 export type PlayableTrack = {
+  queueItemId?: string
   id: number
   title: string
   artistId: number
@@ -27,7 +30,7 @@ export type PlayableTrack = {
   albumId?: number
   albumTitle?: string
   artworkUrl?: string
-  audioUrl: string
+  playbackUrl: string
   durationMs: number
 }
 export const toPlayableTrack = (song: Song): PlayableTrack => ({
@@ -38,6 +41,6 @@ export const toPlayableTrack = (song: Song): PlayableTrack => ({
   albumId: song.album?.id,
   albumTitle: song.album?.title,
   artworkUrl: song.artworkUrl,
-  audioUrl: song.audioUrl,
+  playbackUrl: song.audioUrl,
   durationMs: song.durationMs,
 })

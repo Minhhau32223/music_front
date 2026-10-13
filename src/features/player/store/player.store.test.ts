@@ -8,7 +8,7 @@ const track = (id: number): PlayableTrack => ({
   title: `Track ${id}`,
   artistId: id,
   artistName: `Artist ${id}`,
-  audioUrl: `https://audio.test/${id}.mp3`,
+  playbackUrl: `https://audio.test/${id}.mp3`,
   durationMs: 180_000,
 })
 
@@ -32,6 +32,52 @@ function engineEvent(
 }
 
 describe('player store', () => {
+  it('handles autoplay rejection without a retry loop', async () => {
+    vi.mocked(audioEngine.play).mockRejectedValueOnce(
+      new DOMException('Blocked', 'NotAllowedError'),
+    )
+    usePlayerStore.getState().playTrack(track(1))
+    await Promise.resolve()
+    expect(usePlayerStore.getState()).toMatchObject({ playbackStatus: 'error', shouldPlay: false })
+    expect(audioEngine.play).toHaveBeenCalledTimes(1)
+  })
+  it('recovers offline playback only through an explicit retry', () => {
+    const online = vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false)
+    usePlayerStore.getState().playTrack(track(1))
+    expect(audioEngine.loadSource).not.toHaveBeenCalled()
+    expect(usePlayerStore.getState().error?.code).toBe('NETWORK_ERROR')
+    online.mockReturnValue(true)
+    usePlayerStore.getState().retry()
+    expect(audioEngine.loadSource).toHaveBeenCalledTimes(1)
+    expect(usePlayerStore.getState().shouldPlay).toBe(true)
+    online.mockRestore()
+  })
+  it('retains queue on failed media and does not repeatedly reload', () => {
+    usePlayerStore.getState().playQueue([track(1), track(2)])
+    const state = usePlayerStore.getState()
+    state.handleAudioEvent({
+      ...engineEvent('playing', state.activeGeneration, track(1).playbackUrl),
+      type: 'error',
+      mediaErrorCode: 4,
+    })
+    expect(usePlayerStore.getState().playbackStatus).toBe('error')
+    expect(usePlayerStore.getState().queue).toHaveLength(2)
+    expect(audioEngine.loadSource).toHaveBeenCalledTimes(1)
+  })
+  it('defers seek until metadata and clamps it to the real duration', () => {
+    usePlayerStore.getState().playTrack(track(1))
+    usePlayerStore.getState().seek(999_000)
+    expect(audioEngine.seek).not.toHaveBeenCalled()
+    expect(usePlayerStore.getState().pendingSeekMs).toBe(999_000)
+    const activeGeneration = usePlayerStore.getState().activeGeneration
+    usePlayerStore.getState().handleAudioEvent({
+      ...engineEvent('timeupdate', activeGeneration, track(1).playbackUrl),
+      type: 'loadedmetadata',
+      durationMs: 120_000,
+    })
+    expect(audioEngine.seek).toHaveBeenLastCalledWith(120_000)
+    expect(usePlayerStore.getState().pendingSeekMs).toBeNull()
+  })
   beforeEach(() => {
     generation = 0
     window.localStorage.clear()
@@ -58,7 +104,7 @@ describe('player store', () => {
       playbackStatus: 'loading',
       shouldPlay: true,
     })
-    usePlayerStore.getState().handleAudioEvent(engineEvent('playing', 1, track(2).audioUrl))
+    usePlayerStore.getState().handleAudioEvent(engineEvent('playing', 1, track(2).playbackUrl))
     expect(usePlayerStore.getState().playbackStatus).toBe('playing')
   })
 
@@ -98,21 +144,25 @@ describe('player store', () => {
   it('implements repeat all and repeat one ended behavior', () => {
     usePlayerStore.getState().playQueue([track(1), track(2)], 1)
     usePlayerStore.getState().setRepeatMode('all')
-    usePlayerStore.getState().handleAudioEvent(engineEvent('ended', 1, track(2).audioUrl))
+    usePlayerStore.getState().handleAudioEvent(engineEvent('ended', 1, track(2).playbackUrl))
     expect(usePlayerStore.getState().currentIndex).toBe(0)
 
     usePlayerStore.getState().setRepeatMode('one')
     const activeGeneration = usePlayerStore.getState().activeGeneration
     usePlayerStore
       .getState()
-      .handleAudioEvent(engineEvent('ended', activeGeneration, track(1).audioUrl))
+      .handleAudioEvent(engineEvent('ended', activeGeneration, track(1).playbackUrl))
     expect(audioEngine.seek).toHaveBeenLastCalledWith(0)
     expect(usePlayerStore.getState()).toMatchObject({ currentIndex: 0, shouldPlay: true })
   })
 
   it('restarts previous after three seconds and otherwise selects the previous item', () => {
     usePlayerStore.getState().playQueue([track(1), track(2)], 1)
-    usePlayerStore.setState({ currentTimeMs: 3_001, playbackStatus: 'playing' })
+    usePlayerStore.setState({
+      currentTimeMs: 3_001,
+      durationMs: 180_000,
+      playbackStatus: 'playing',
+    })
     usePlayerStore.getState().previous()
     expect(audioEngine.seek).toHaveBeenLastCalledWith(0)
     expect(usePlayerStore.getState().currentIndex).toBe(1)
@@ -127,9 +177,9 @@ describe('player store', () => {
     usePlayerStore.getState().next()
     usePlayerStore.getState().next()
     expect(usePlayerStore.getState()).toMatchObject({ currentIndex: 2, activeGeneration: 3 })
-    usePlayerStore.getState().handleAudioEvent(engineEvent('playing', 1, track(1).audioUrl))
+    usePlayerStore.getState().handleAudioEvent(engineEvent('playing', 1, track(1).playbackUrl))
     expect(usePlayerStore.getState().playbackStatus).toBe('loading')
-    usePlayerStore.getState().handleAudioEvent(engineEvent('playing', 3, track(3).audioUrl))
+    usePlayerStore.getState().handleAudioEvent(engineEvent('playing', 3, track(3).playbackUrl))
     expect(usePlayerStore.getState().playbackStatus).toBe('playing')
   })
 
@@ -141,5 +191,55 @@ describe('player store', () => {
     expect(persisted.positionMs).toBe(42_000)
     expect(persisted.playbackStatus).toBeUndefined()
     expect(persisted.shouldPlay).toBeUndefined()
+  })
+
+  it('prioritizes Play Next under shuffle and preserves playback while appending and clearing upcoming', () => {
+    usePlayerStore.getState().playQueue([track(1), track(2), track(3)])
+    usePlayerStore.setState({ currentTimeMs: 15000, playbackStatus: 'playing' })
+    usePlayerStore.getState().addToQueue(track(1))
+    expect(usePlayerStore.getState()).toMatchObject({
+      currentIndex: 0,
+      currentTimeMs: 15000,
+      playbackStatus: 'playing',
+    })
+    usePlayerStore.getState().toggleShuffle()
+    usePlayerStore.getState().playNext(track(8))
+    const state = usePlayerStore.getState()
+    expect(state.queue[state.shuffleOrder[state.shufflePosition + 1]].id).toBe(8)
+    const current = state.queue[0]
+    usePlayerStore.getState().clearUpcoming()
+    expect(usePlayerStore.getState().queue).toEqual([current])
+    expect(usePlayerStore.getState()).toMatchObject({
+      currentTimeMs: 15000,
+      playbackStatus: 'playing',
+    })
+    expect(audioEngine.loadSource).toHaveBeenCalledTimes(1)
+  })
+
+  it('takes runtime duration from metadata even when imported duration is zero', () => {
+    usePlayerStore.getState().playTrack({ ...track(1), durationMs: 0 })
+    expect(usePlayerStore.getState().durationMs).toBe(0)
+    usePlayerStore.getState().handleAudioEvent({
+      ...engineEvent('playing', generation, track(1).playbackUrl),
+      type: 'loadedmetadata',
+      durationMs: 231000,
+    })
+    expect(usePlayerStore.getState().durationMs).toBe(231000)
+  })
+
+  it('stops at the end with repeat off and permits manual next with repeat one', () => {
+    usePlayerStore.getState().playQueue([track(1), track(2)])
+    usePlayerStore.getState().setRepeatMode('one')
+    usePlayerStore.getState().next()
+    expect(usePlayerStore.getState().currentIndex).toBe(1)
+    usePlayerStore.getState().setRepeatMode('off')
+    usePlayerStore
+      .getState()
+      .handleAudioEvent(engineEvent('ended', generation, track(2).playbackUrl))
+    expect(usePlayerStore.getState()).toMatchObject({
+      shouldPlay: false,
+      playbackStatus: 'paused',
+      currentIndex: 1,
+    })
   })
 })

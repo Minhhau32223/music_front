@@ -8,6 +8,7 @@ import {
   DetailNotFoundState,
   DetailPageSkeleton,
   DetailSectionState,
+  DetailTrackListSkeleton,
 } from '@/components/shared/DetailStates'
 import { DynamicBackdrop } from '@/components/shared/DynamicBackdrop'
 import { Button } from '@/components/ui/Button'
@@ -22,6 +23,12 @@ import { toPlayableTrack } from '@/features/songs/types/song.types'
 import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 import { isApiError } from '@/lib/api/api-error'
 import { parseEntityId } from '@/lib/route-params'
+import { motion } from 'framer-motion'
+
+const pageVariants = {
+  initial: { opacity: 0, y: 10 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+}
 
 export function PlaylistPage() {
   const playlistId = parseEntityId(useParams().playlistId)
@@ -50,12 +57,12 @@ export function PlaylistPage() {
   const editable = canEditPlaylist(playlist.data, currentUser.data?.id)
 
   return (
-    <div className="page detail-page playlist-detail-page">
+    <motion.div className="page detail-page playlist-detail-page" variants={pageVariants} initial="initial" animate="animate">
       <DynamicBackdrop artworkUrl={playlist.data.artworkUrl} className="detail-hero playlist-hero">
         <div className="detail-cover">
           <Artwork
             src={playlist.data.artworkUrl}
-            alt={`Ảnh playlist ${playlist.data.name}`}
+            alt={`${playlist.data.name} playlist artwork`}
             loading="eager"
             fetchPriority="high"
           />
@@ -63,22 +70,22 @@ export function PlaylistPage() {
         <div className="detail-hero-copy">
           <span className="caption detail-eyebrow">Playlist</span>
           <h1>{playlist.data.name}</h1>
-          <p className="detail-meta">{songs.length} bài hát</p>
+          <p className="detail-meta">{songs.length} songs</p>
           <div className="hero-actions">
             <Button
               size="lg"
               disabled={!songs.length}
               onClick={() => playQueue(songs.map(toPlayableTrack), 0)}
             >
-              <Play size={17} fill="currentColor" /> Phát
+              <Play size={17} fill="currentColor" /> Play
             </Button>
             {editable && (
               <>
                 <Button variant="secondary" size="lg" onClick={() => setEditOpen(true)}>
-                  <Pencil size={17} /> Đổi tên
+                  <Pencil size={17} /> Rename
                 </Button>
                 <Button variant="ghost" size="lg" onClick={() => setDeleteOpen(true)}>
-                  <Trash2 size={17} /> Xóa
+                  <Trash2 size={17} /> Delete
                 </Button>
               </>
             )}
@@ -89,32 +96,38 @@ export function PlaylistPage() {
       <section className="section detail-section" aria-labelledby="playlist-tracks-heading">
         <div className="section-heading">
           <div className="section-title-wrap">
-            <span className="caption section-kicker">01 // Danh sách phát</span>
-            <h2 id="playlist-tracks-heading">Bài hát</h2>
+            <span className="caption section-kicker">01 // Tracklist</span>
+            <h2 id="playlist-tracks-heading">Songs</h2>
           </div>
         </div>
-        <DetailSectionState
-          loading={tracks.isLoading}
-          error={tracks.isError}
-          empty={!songs.length}
-          emptyMessage={
-            editable
-              ? 'Playlist đang trống. Dùng menu của một bài hát để thêm vào đây.'
-              : 'Playlist này chưa có bài hát.'
-          }
-          onRetry={() => void tracks.refetch()}
-        />
-        {songs.length ? (
-          <DetailTrackList
-            songs={songs}
-            context="playlist"
-            playlistContext={{
-              canEdit: editable,
-              removingSongId: removeSong.variables,
-              onRemoveSong: (songId) => removeSong.mutate(songId),
-            }}
-          />
-        ) : null}
+        {tracks.isLoading ? (
+          <DetailTrackListSkeleton />
+        ) : (
+          <>
+            <DetailSectionState
+              loading={false}
+              error={tracks.isError}
+              empty={!songs.length}
+              emptyMessage={
+                editable
+                  ? 'This playlist is empty. Use a song menu to add tracks here.'
+                  : 'This playlist has no songs yet.'
+              }
+              onRetry={() => void tracks.refetch()}
+            />
+            {songs.length ? (
+              <DetailTrackList
+                songs={songs}
+                context="playlist"
+                playlistContext={{
+                  canEdit: editable,
+                  removingSongId: removeSong.variables,
+                  onRemoveSong: (songId) => removeSong.mutate(songId),
+                }}
+              />
+            ) : null}
+          </>
+        )}
       </section>
 
       <PlaylistFormDialog
@@ -128,6 +141,6 @@ export function PlaylistPage() {
         onClose={() => setDeleteOpen(false)}
         onDeleted={() => navigate('/library?type=playlists', { replace: true })}
       />
-    </div>
+    </motion.div>
   )
 }

@@ -22,7 +22,7 @@ export function VolumeControl() {
 
   return (
     <div className="volume-control">
-      <IconButton label={isMuted ? 'Bật âm thanh' : 'Tắt âm thanh'} onClick={toggleMute}>
+      <IconButton label={isMuted ? 'Unmute' : 'Mute'} onClick={toggleMute}>
         {icon}
       </IconButton>
       <input
@@ -31,8 +31,8 @@ export function VolumeControl() {
         min={0}
         max={100}
         value={Math.round(volume * 100)}
-        aria-label="Âm lượng"
-        aria-valuetext={`Âm lượng ${displayVolume}%`}
+        aria-label="Volume"
+        aria-valuetext={`Volume ${displayVolume}%`}
         style={{ '--range-progress': `${displayVolume}%` } as CSSProperties}
         onChange={(event) => setVolume(Number(event.currentTarget.value) / 100)}
       />

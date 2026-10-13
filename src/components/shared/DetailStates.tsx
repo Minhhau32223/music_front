@@ -5,7 +5,7 @@ import { isApiError } from '@/lib/api/api-error'
 
 export function DetailPageSkeleton() {
   return (
-    <div className="page detail-page" aria-label="Đang tải trang chi tiết">
+    <div className="page detail-page" aria-label="Loading detail page">
       <div className="detail-skeleton-hero">
         <div className="skeleton detail-skeleton-art" />
         <div className="detail-skeleton-copy">
@@ -14,24 +14,30 @@ export function DetailPageSkeleton() {
           <div className="skeleton skeleton-line" />
         </div>
       </div>
-      <div className="detail-skeleton-list">
-        {Array.from({ length: 5 }, (_, index) => (
-          <div className="skeleton detail-skeleton-row" key={index} />
-        ))}
-      </div>
+      <DetailTrackListSkeleton />
+    </div>
+  )
+}
+
+export function DetailTrackListSkeleton() {
+  return (
+    <div className="detail-skeleton-list" aria-label="Loading tracklist">
+      {Array.from({ length: 5 }, (_, index) => (
+        <div className="skeleton detail-skeleton-row" key={index} />
+      ))}
     </div>
   )
 }
 
 export function DetailErrorState({ error, onRetry }: { error: unknown; onRetry: () => void }) {
   const status = isApiError(error) ? error.status : 0
-  const title = status === 403 ? 'Không có quyền truy cập' : 'Không thể tải nội dung'
+  const title = status === 403 ? 'Access denied' : 'Unable to load content'
   const message =
     status === 403
-      ? 'Tài khoản hiện tại không thể xem nội dung này.'
+      ? 'Your current account cannot view this content.'
       : status === 0
-        ? 'Không thể kết nối tới NOCTURNE. Hãy kiểm tra kết nối và thử lại.'
-        : 'NOCTURNE đang gặp sự cố. Hãy thử lại sau ít phút.'
+        ? 'Unable to connect to NOCTURNE. Check your connection and try again.'
+        : 'NOCTURNE is having trouble. Please try again in a few minutes.'
   return (
     <div className="page">
       <div className="state-card" role="alert">
@@ -40,7 +46,7 @@ export function DetailErrorState({ error, onRetry }: { error: unknown; onRetry: 
           <h1>{title}</h1>
           <p>{message}</p>
           <Button variant="secondary" onClick={onRetry}>
-            Thử lại
+            Try again
           </Button>
         </div>
       </div>
@@ -54,10 +60,10 @@ export function DetailNotFoundState({ entity }: { entity: string }) {
       <div className="state-card" role="status">
         <div>
           <SearchX size={34} color="var(--text-muted)" />
-          <h1>Không tìm thấy {entity}</h1>
-          <p>Liên kết có thể không hợp lệ hoặc nội dung đã được gỡ.</p>
+          <h1>{entity} not found</h1>
+          <p>The link may be invalid or the content may have been removed.</p>
           <Link className="button secondary-variant" to="/home">
-            Về trang chủ
+            Back to home
           </Link>
         </div>
       </div>
@@ -81,16 +87,16 @@ export function DetailSectionState({
   if (loading) {
     return (
       <div className="detail-section-state" role="status">
-        <span className="button-loader" /> Đang tải…
+        <span className="button-loader" /> Loading…
       </div>
     )
   }
   if (error) {
     return (
       <div className="detail-section-state" role="alert">
-        <CircleAlert size={19} /> Không thể tải mục này.
+        <CircleAlert size={19} /> Unable to load this item.
         <Button size="sm" variant="secondary" onClick={onRetry}>
-          Thử lại
+          Try again
         </Button>
       </div>
     )

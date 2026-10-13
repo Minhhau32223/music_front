@@ -1,4 +1,5 @@
 import { Heart } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { LikeButton } from '@/features/favorites/components/LikeButton'
 import { useSongDetail } from '@/features/songs/hooks/useSongDetail'
 import type { PlayableTrack } from '@/features/songs/types/song.types'
@@ -14,15 +15,17 @@ export function PlayerLikeButton({
 
   if (!track || !song.data) {
     return (
-      <button
+      <motion.button
         type="button"
         className={`like-button${showLabel ? ' with-label' : ''}`}
-        aria-label="Yêu thích bài hát đang phát"
+        aria-label="Like currently playing song"
         disabled
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.95 }}
       >
         <Heart size={18} />
-        {showLabel && <span>Yêu thích</span>}
-      </button>
+        {showLabel && <span>Like</span>}
+      </motion.button>
     )
   }
 

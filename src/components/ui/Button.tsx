@@ -1,6 +1,7 @@
-import type { ButtonHTMLAttributes, ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/cn'
+import { motion, type HTMLMotionProps } from 'framer-motion'
 
 const buttonVariants = cva('button', {
   variants: {
@@ -14,7 +15,7 @@ const buttonVariants = cva('button', {
   },
   defaultVariants: { variant: 'primary', size: 'md' },
 })
-type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> &
+type ButtonProps = Omit<HTMLMotionProps<'button'>, 'children'> &
   VariantProps<typeof buttonVariants> & { loading?: boolean; children: ReactNode }
 
 export function Button({
@@ -27,15 +28,17 @@ export function Button({
   ...props
 }: ButtonProps) {
   return (
-    <button
+    <motion.button
       type="button"
       className={cn(buttonVariants({ variant, size }), className)}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
+      whileHover={{ scale: disabled || loading ? 1 : 1.02 }}
+      whileTap={{ scale: disabled || loading ? 1 : 0.98 }}
       {...props}
     >
       {loading && <span className="button-loader" aria-hidden="true" />}
       {children}
-    </button>
+    </motion.button>
   )
 }

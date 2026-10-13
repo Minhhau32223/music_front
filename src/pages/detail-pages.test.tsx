@@ -99,7 +99,7 @@ describe('Phase 5 detail pages', () => {
 
   it('starts the complete album context at the selected track', () => {
     renderRoute('/album/3', '/album/:albumId', <AlbumDetailPage />)
-    fireEvent.click(screen.getByRole('button', { name: 'Phát Blue Hour' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Play Blue Hour' }))
     expect(usePlayerStore.getState()).toMatchObject({
       currentIndex: 1,
       playbackStatus: 'loading',
@@ -120,14 +120,14 @@ describe('Phase 5 detail pages', () => {
       'href',
       '/album/3',
     )
-    fireEvent.click(screen.getByRole('button', { name: 'Phát' }))
-    expect(usePlayerStore.getState().queue[0]).toMatchObject({ id: 1, audioUrl: 'night.mp3' })
-    expect(screen.queryByText(/Lyrics|Follow|Download/i)).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Play' }))
+    expect(usePlayerStore.getState().queue[0]).toMatchObject({ id: 1, playbackUrl: 'night.mp3' })
+    expect(screen.queryByText(/Follow|Download/i)).not.toBeInTheDocument()
   })
 
   it('rejects a malformed route id without presenting stale entity data', () => {
     renderRoute('/album/nope', '/album/:albumId', <AlbumDetailPage />)
-    expect(screen.getByRole('heading', { name: 'Không tìm thấy album' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'album not found' })).toBeInTheDocument()
     expect(screen.queryByText('After Dark')).not.toBeInTheDocument()
   })
 
@@ -139,9 +139,9 @@ describe('Phase 5 detail pages', () => {
       }) as never,
     )
     renderRoute('/artist/404', '/artist/:artistId', <ArtistDetailPage />)
-    expect(screen.getByRole('heading', { name: 'Không tìm thấy nghệ sĩ' })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Về trang chủ' })).toHaveAttribute('href', '/home')
-    expect(screen.queryByRole('button', { name: 'Thử lại' })).not.toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'artist not found' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Back to home' })).toHaveAttribute('href', '/home')
+    expect(screen.queryByRole('button', { name: 'Try again' })).not.toBeInTheDocument()
   })
 
   it('isolates an artist track failure while keeping identity and releases visible', () => {
@@ -150,15 +150,15 @@ describe('Phase 5 detail pages', () => {
     )
     renderRoute('/artist/2', '/artist/:artistId', <ArtistDetailPage />)
     expect(screen.getByRole('heading', { name: 'Nocturne', level: 1 })).toBeInTheDocument()
-    expect(screen.getByText('Không thể tải mục này.')).toBeInTheDocument()
+    expect(screen.getByText('Unable to load this item.')).toBeInTheDocument()
     expect(screen.getAllByRole('link', { name: 'After Dark' }).length).toBeGreaterThan(0)
   })
 
   it('treats an album with no tracks as valid empty data and disables play', () => {
     vi.mocked(useAlbumTracks).mockReturnValue(query([]) as never)
     renderRoute('/album/3', '/album/:albumId', <AlbumDetailPage />)
-    expect(screen.getByText('Album này chưa có bài hát.')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Phát' })).toBeDisabled()
+    expect(screen.getByText('This album has no songs yet.')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Play' })).toBeDisabled()
   })
 
   it('does not replace an existing queue when a detail page merely mounts', () => {
@@ -169,7 +169,7 @@ describe('Phase 5 detail pages', () => {
           title: 'Already Playing',
           artistId: 8,
           artistName: 'Existing Artist',
-          audioUrl: 'existing.mp3',
+          playbackUrl: 'existing.mp3',
           durationMs: 90_000,
         },
       ],
@@ -178,7 +178,7 @@ describe('Phase 5 detail pages', () => {
     })
     renderRoute('/song/1', '/song/:songId', <SongPage />)
     expect(usePlayerStore.getState().queue).toEqual([
-      expect.objectContaining({ id: 99, audioUrl: 'existing.mp3' }),
+      expect.objectContaining({ id: 99, playbackUrl: 'existing.mp3' }),
     ])
   })
 })

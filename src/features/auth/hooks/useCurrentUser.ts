@@ -8,8 +8,10 @@ export function useCurrentUser() {
   const authenticated = useAuthStore((state) => state.status === 'authenticated')
   return useQuery({
     queryKey: currentUserQueryKey,
-    queryFn: authApi.getCurrentUser,
+    queryFn: ({ signal }) => authApi.getCurrentUser(signal),
     enabled: authenticated,
+    staleTime: 2 * 60_000,
+    gcTime: 30 * 60_000,
     retry: false,
   })
 }

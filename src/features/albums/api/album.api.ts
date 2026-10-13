@@ -6,9 +6,9 @@ import { mapAlbumDetailDto, mapAlbumDto } from './album.mapper'
 import type { AlbumDto } from '../types/album.dto'
 import type { AlbumSummary } from '../types/album.types'
 export const albumApi = {
-  async getAlbums() {
+  async getAlbums(signal?: AbortSignal) {
     try {
-      return (await apiClient.get<AlbumDto[]>('/albums/')).data.map(mapAlbumDto)
+      return (await apiClient.get<AlbumDto[]>('/albums/', { signal })).data.map(mapAlbumDto)
     } catch (error) {
       throw normalizeApiError(error)
     }
@@ -28,10 +28,13 @@ export const albumApi = {
       throw normalizeApiError(error)
     }
   },
-  async getNewReleases(limit = 6): Promise<AlbumSummary[]> {
+  async getNewReleases(limit = 6, signal?: AbortSignal): Promise<AlbumSummary[]> {
     try {
       const songs = (
-        await apiClient.get<SongDto[]>('/recommendations/new-releases', { params: { limit } })
+        await apiClient.get<SongDto[]>('/recommendations/new-releases', {
+          params: { limit },
+          signal,
+        })
       ).data.map(mapSongDto)
       const albums = new Map<number, AlbumSummary>()
       songs.forEach((song) => {

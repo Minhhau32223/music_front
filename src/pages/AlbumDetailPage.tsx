@@ -8,6 +8,7 @@ import {
   DetailNotFoundState,
   DetailPageSkeleton,
   DetailSectionState,
+  DetailTrackListSkeleton,
 } from '@/components/shared/DetailStates'
 import { DynamicBackdrop } from '@/components/shared/DynamicBackdrop'
 import { Button } from '@/components/ui/Button'
@@ -18,6 +19,12 @@ import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 import { isApiError } from '@/lib/api/api-error'
 import { formatDuration } from '@/lib/format/duration'
 import { parseEntityId } from '@/lib/route-params'
+import { motion } from 'framer-motion'
+
+const pageVariants = {
+  initial: { opacity: 0, y: 10 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+}
 
 export function AlbumDetailPage() {
   const albumId = parseEntityId(useParams().albumId)
@@ -41,7 +48,7 @@ export function AlbumDetailPage() {
   }
 
   return (
-    <div className="page detail-page">
+    <motion.div className="page detail-page" variants={pageVariants} initial="initial" animate="animate">
       <DynamicBackdrop
         artworkUrl={album.data.artworkUrl}
         fallbackColor={album.data.backgroundColor}
@@ -50,7 +57,7 @@ export function AlbumDetailPage() {
         <div className="detail-cover">
           <Artwork
             src={album.data.artworkUrl}
-            alt={`Bìa album ${album.data.title}`}
+            alt={`${album.data.title} album cover`}
             loading="eager"
             fetchPriority="high"
           />
@@ -61,7 +68,7 @@ export function AlbumDetailPage() {
           <p className="detail-meta">
             {artist && <Link to={`/artist/${artist.id}`}>{artist.name}</Link>}
             {artist && tracks.data?.length ? <span aria-hidden="true"> · </span> : null}
-            {tracks.data?.length ? <span>{tracks.data.length} bài hát</span> : null}
+            {tracks.data?.length ? <span>{tracks.data.length} songs</span> : null}
             {totalDuration > 0 ? (
               <>
                 <span aria-hidden="true"> · </span>
@@ -75,7 +82,7 @@ export function AlbumDetailPage() {
               disabled={!playableTracks.length}
               onClick={() => playQueue(playableTracks, 0)}
             >
-              <Play size={17} fill="currentColor" /> Phát
+              <Play size={17} fill="currentColor" /> Play
             </Button>
           </div>
         </div>
@@ -84,26 +91,32 @@ export function AlbumDetailPage() {
       <section className="section detail-section" aria-labelledby="album-tracks-heading">
         <div className="section-heading">
           <div className="section-title-wrap">
-            <span className="caption section-kicker">01 // Danh sách phát</span>
-            <h2 id="album-tracks-heading">Bài hát</h2>
+            <span className="caption section-kicker">01 // Tracklist</span>
+            <h2 id="album-tracks-heading">Songs</h2>
           </div>
         </div>
-        <DetailSectionState
-          loading={tracks.isLoading}
-          error={tracks.isError}
-          empty={!tracks.data?.length}
-          emptyMessage="Album này chưa có bài hát."
-          onRetry={() => void tracks.refetch()}
-        />
-        {tracks.data?.length ? <DetailTrackList songs={tracks.data} context="album" /> : null}
+        {tracks.isLoading ? (
+          <DetailTrackListSkeleton />
+        ) : (
+          <>
+            <DetailSectionState
+              loading={false}
+              error={tracks.isError}
+              empty={!tracks.data?.length}
+              emptyMessage="This album has no songs yet."
+              onRetry={() => void tracks.refetch()}
+            />
+            {tracks.data?.length ? <DetailTrackList songs={tracks.data} context="album" /> : null}
+          </>
+        )}
       </section>
 
       {album.data.description && (
         <section className="section detail-section" aria-labelledby="album-about-heading">
           <div className="section-heading">
             <div className="section-title-wrap">
-              <span className="caption section-kicker">02 // Thông tin</span>
-              <h2 id="album-about-heading">Giới thiệu album</h2>
+              <span className="caption section-kicker">02 // Information</span>
+              <h2 id="album-about-heading">About the album</h2>
             </div>
           </div>
           <div className="detail-description-card">
@@ -111,6 +124,7 @@ export function AlbumDetailPage() {
           </div>
         </section>
       )}
-    </div>
+    </motion.div>
   )
 }
+

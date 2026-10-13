@@ -87,12 +87,12 @@ export function SearchPage() {
         <Search size={24} color="var(--text-secondary)" />
         <input
           value={query}
-          aria-label="Tìm kiếm nhạc"
+          aria-label="Search music"
           onChange={(event) => setQuery(event.target.value)}
           autoFocus
         />
         <kbd>ESC</kbd>
-        <IconButton label="Xóa tìm kiếm" tooltip={false} onClick={() => setQuery('')}>
+        <IconButton label="Clear search" tooltip={false} onClick={() => setQuery('')}>
           <X size={17} />
         </IconButton>
       </label>
@@ -129,10 +129,10 @@ export function SearchPage() {
               <Button variant="secondary" onClick={() => navigate('/artist/the-weeknd')}>
                 View artist
               </Button>
-              <IconButton label="Mở radio nghệ sĩ">
+              <IconButton label="Open artist radio">
                 <Radio size={18} />
               </IconButton>
-              <IconButton label="Phát The Weeknd" className="play-main">
+              <IconButton label="Play The Weeknd" className="play-main">
                 <Play size={18} fill="currentColor" />
               </IconButton>
             </div>

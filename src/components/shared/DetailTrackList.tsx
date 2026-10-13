@@ -7,10 +7,11 @@ import { toPlayableTrack } from '@/features/songs/types/song.types'
 import { Artwork } from './Artwork'
 import { SongContextMenu } from './SongContextMenu'
 import { LikeButton } from '@/features/favorites/components/LikeButton'
+import { motion, AnimatePresence } from 'framer-motion'
 
 type DetailTrackListProps = {
   songs: Song[]
-  context: 'artist' | 'album' | 'playlist' | 'liked-songs'
+  context: 'artist' | 'album' | 'playlist' | 'liked-songs' | 'search'
   playlistContext?: {
     canEdit: boolean
     onRemoveSong: (songId: number) => void
@@ -31,26 +32,33 @@ export function DetailTrackList({ songs, context, playlistContext }: DetailTrack
     <div className={`detail-track-list ${context}-tracks`} role="list">
       <div className="detail-track-head" aria-hidden="true">
         <span>#</span>
-        <span>Tiêu đề</span>
-        <span>{context === 'album' ? 'Lượt nghe' : 'Album'}</span>
-        <span>Thời lượng</span>
+        <span>Title</span>
+        <span>{context === 'album' ? 'Plays' : 'Album'}</span>
+        <span>Duration</span>
         <span />
       </div>
+      <AnimatePresence>
       {songs.map((song, index) => {
-        const active = currentTrack?.id === song.id && currentTrack.audioUrl === song.audioUrl
+        const active = currentTrack?.id === song.id && currentTrack.playbackUrl === song.audioUrl
         const playing = active && playbackStatus === 'playing'
         const busy = active && (playbackStatus === 'loading' || playbackStatus === 'buffering')
         return (
-          <article
+          <motion.article
+            data-song-surface
             className={`detail-track-row${active ? ' active-track' : ''}`}
             role="listitem"
             aria-current={active ? 'true' : undefined}
             key={song.id}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.2, delay: index * 0.02 }}
+            whileHover={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
           >
             <button
               className="detail-track-play"
               type="button"
-              aria-label={playing || busy ? `Tạm dừng ${song.title}` : `Phát ${song.title}`}
+              aria-label={playing || busy ? `Pause ${song.title}` : `Play ${song.title}`}
               onClick={() => playAt(index)}
             >
               <span className="detail-track-index">{index + 1}</span>
@@ -69,6 +77,7 @@ export function DetailTrackList({ songs, context, playlistContext }: DetailTrack
                 <Artwork
                   src={song.artworkUrl ?? song.album?.artworkUrl}
                   alt={`${song.title} artwork`}
+                  size="xs"
                 />
               </div>
               <div>
@@ -95,6 +104,7 @@ export function DetailTrackList({ songs, context, playlistContext }: DetailTrack
             <div className="detail-track-actions">
               <LikeButton song={song} />
               <SongContextMenu
+                context={context}
                 song={song}
                 onPlayNow={() => playAt(index)}
                 playlistContext={
@@ -108,9 +118,10 @@ export function DetailTrackList({ songs, context, playlistContext }: DetailTrack
                 }
               />
             </div>
-          </article>
+          </motion.article>
         )
       })}
+      </AnimatePresence>
     </div>
   )
 }

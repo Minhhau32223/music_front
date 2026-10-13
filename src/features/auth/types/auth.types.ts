@@ -33,6 +33,6 @@ export type CurrentUser = {
   username: string
   email: string
   active: boolean
-  role: 'USER' | 'ADMIN'
+  role: 'USER' | 'ARTIST' | 'ADMIN'
   avatarUrl?: string | null
 }

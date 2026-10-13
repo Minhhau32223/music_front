@@ -3,16 +3,11 @@ import { useAuthStore } from '@/features/auth/store/auth.store'
 import type { AccessTokenResponse } from '@/features/auth/types/auth.types'
 import { isApiError, normalizeApiError } from './api-error'
 import { accessTokenRefreshManager } from './refresh-manager'
+import { env } from '@/app/config/env'
 
 type RetryableConfig = InternalAxiosRequestConfig & { _retry?: boolean; _startedAt?: number }
 
-const localApiBaseUrl =
-  typeof window === 'undefined'
-    ? 'http://localhost:8000/api'
-    : `http://${window.location.hostname}:8000/api`
-const baseURL =
-  import.meta.env.VITE_API_BASE_URL ??
-  (import.meta.env.DEV ? localApiBaseUrl : 'http://localhost:8000/api')
+const baseURL = env.apiBaseUrl
 
 export const apiClient = axios.create({
   baseURL,
@@ -28,9 +23,18 @@ export const sessionClient = axios.create({
   headers: { Accept: 'application/json' },
 })
 
+sessionClient.interceptors.request.use((config) => {
+  if (!config.headers.has('X-Request-ID')) config.headers.set('X-Request-ID', crypto.randomUUID())
+  return config
+})
+
 apiClient.interceptors.request.use((config: RetryableConfig) => {
   config._startedAt = performance.now()
-  const accessToken = useAuthStore.getState().accessToken
+  const session = useAuthStore.getState()
+  const accessToken = session.status === 'authenticated' ? session.accessToken : null
+  config.headers = AxiosHeaders.from(config.headers)
+  if (!config.headers.has('X-Request-ID')) config.headers.set('X-Request-ID', crypto.randomUUID())
+  if (!accessToken) config.headers.delete('Authorization')
   if (accessToken) {
     config.headers = AxiosHeaders.from(config.headers)
     config.headers.set('Authorization', `Bearer ${accessToken}`)
@@ -56,14 +60,34 @@ apiClient.interceptors.response.use(
 
     const original = error.config as RetryableConfig
     const isAuthEndpoint = original.url?.includes('/auth/') ?? false
-    if (error.response?.status !== 401 || original._retry || isAuthEndpoint) {
+    if (error.response?.status === 401 && original._retry && !isAuthEndpoint)
+      useAuthStore.getState().clearSession()
+    if (
+      error.response?.status !== 401 ||
+      original._retry ||
+      isAuthEndpoint ||
+      useAuthStore.getState().status === 'unauthenticated'
+    ) {
       return Promise.reject(normalizeApiError(error))
     }
 
     original._retry = true
+    const currentToken = useAuthStore.getState().accessToken
+    if (currentToken && original.headers.get('Authorization') !== `Bearer ${currentToken}`) {
+      original.headers.set('Authorization', `Bearer ${currentToken}`)
+      return apiClient(original)
+    }
+    const refreshSessionToken = useAuthStore.getState().accessToken
     try {
       const accessToken = await accessTokenRefreshManager.run(async () => {
+        const startedToken = useAuthStore.getState().accessToken
         const response = await sessionClient.post<AccessTokenResponse>('/auth/refresh/')
+        if (
+          useAuthStore.getState().accessToken !== startedToken ||
+          useAuthStore.getState().status === 'unauthenticated'
+        ) {
+          throw { status: 401, kind: 'auth', message: 'Session changed during refresh.' }
+        }
         useAuthStore.getState().setSession(response.data.accessToken)
         return response.data.accessToken
       })
@@ -72,9 +96,8 @@ apiClient.interceptors.response.use(
       return apiClient(original)
     } catch (refreshError) {
       const normalized = isApiError(refreshError) ? refreshError : normalizeApiError(refreshError)
-      if (normalized.status === 401) {
+      if (useAuthStore.getState().accessToken === refreshSessionToken)
         useAuthStore.getState().clearSession()
-      }
       return Promise.reject(normalized)
     }
   },

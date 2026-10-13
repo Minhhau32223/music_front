@@ -9,7 +9,7 @@ export const playlistListQuery = () =>
     queryFn: ({ signal }) => playlistApi.getPlaylists(signal),
     staleTime: 120_000,
     gcTime: 1_800_000,
-    retry: 1,
+    retry: retryDetailQuery,
   })
 
 export const playlistDetailQuery = (id: number) =>

@@ -46,12 +46,12 @@ export function PlaylistFormDialog({ open, onClose, playlist }: PlaylistFormDial
     <Modal
       open={open}
       onClose={() => !mutation.isPending && onClose()}
-      title={playlist ? 'Đổi tên playlist' : 'Tạo playlist'}
-      description="Tên playlist sẽ hiển thị trong thư viện của bạn."
+      title={playlist ? 'Rename playlist' : 'Create playlist'}
+      description="Your playlist name will appear in your library."
     >
       <form className="modal-form" onSubmit={submit}>
         <Input
-          label="Tên playlist"
+          label="Playlist name"
           autoComplete="off"
           maxLength={255}
           error={errors.name?.message}
@@ -59,10 +59,10 @@ export function PlaylistFormDialog({ open, onClose, playlist }: PlaylistFormDial
         />
         <div className="modal-actions">
           <Button variant="ghost" disabled={mutation.isPending} onClick={onClose}>
-            Hủy
+            Cancel
           </Button>
           <Button type="submit" loading={mutation.isPending}>
-            {playlist ? 'Lưu' : 'Tạo playlist'}
+            {playlist ? 'Save' : 'Create playlist'}
           </Button>
         </div>
       </form>

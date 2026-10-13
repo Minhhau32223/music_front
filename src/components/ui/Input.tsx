@@ -36,7 +36,11 @@ export function Input({
         {endAdornment}
       </span>
       {(error || hint) && (
-        <span id={`${inputId}-message`} className={cn('field-message', error && 'error')}>
+        <span
+          id={`${inputId}-message`}
+          className={cn('field-message', error && 'error')}
+          aria-live={error ? 'polite' : undefined}
+        >
           {error ?? hint}
         </span>
       )}

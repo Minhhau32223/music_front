@@ -20,7 +20,7 @@ export function SearchInput({ loading, onClear, value, ...props }: SearchInputPr
           <button
             type="button"
             className="search-clear"
-            aria-label="Xóa tìm kiếm"
+            aria-label="Clear search"
             onClick={onClear}
           >
             <X size={15} />

@@ -22,13 +22,40 @@ export const songApi = {
       throw normalizeApiError(error)
     }
   },
-  async getLatestSongs(limit = 6) {
-    return this.getSongs({ page: 0, size: limit, sortBy: 'createdAt', sortDirection: 'DESC' })
+  async getLatestSongs(limit = 6, signal?: AbortSignal) {
+    return this.getSongs(
+      { page: 0, size: limit, sortBy: 'createdAt', sortDirection: 'DESC' },
+      signal,
+    )
   },
-  async getPopularSongs(limit = 8) {
+  async getPopularSongs(limit = 8, signal?: AbortSignal) {
     try {
       return (
-        await apiClient.get<SongDto[]>('/recommendations/top-songs', { params: { limit } })
+        await apiClient.get<SongDto[]>('/recommendations/top-songs', { params: { limit }, signal })
+      ).data.map(mapSongDto)
+    } catch (error) {
+      throw normalizeApiError(error)
+    }
+  },
+  async getNewReleaseSongs(limit = 6, signal?: AbortSignal) {
+    try {
+      return (
+        await apiClient.get<SongDto[]>('/recommendations/new-releases', {
+          params: { limit },
+          signal,
+        })
+      ).data.map(mapSongDto)
+    } catch (error) {
+      throw normalizeApiError(error)
+    }
+  },
+  async getPersonalizedSongs(limit = 6, signal?: AbortSignal) {
+    try {
+      return (
+        await apiClient.get<SongDto[]>('/recommendations/personalized', {
+          params: { limit },
+          signal,
+        })
       ).data.map(mapSongDto)
     } catch (error) {
       throw normalizeApiError(error)

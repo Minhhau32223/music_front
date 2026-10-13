@@ -1,4 +1,5 @@
 import { LoaderCircle, Pause, Play, Repeat2, Shuffle, SkipBack, SkipForward } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { IconButton } from '@/components/ui/IconButton'
 import { selectCurrentTrack, selectIsBusy, usePlayerStore } from '../store/player.store'
 
@@ -20,7 +21,7 @@ export function PlaybackControls({ compact = false }: { compact?: boolean }) {
     <div className={`playback-controls${compact ? ' compact' : ''}`}>
       {!compact && (
         <IconButton
-          label={shuffleEnabled ? 'Tắt phát ngẫu nhiên' : 'Bật phát ngẫu nhiên'}
+          label={shuffleEnabled ? 'Disable shuffle' : 'Enable shuffle'}
           active={shuffleEnabled}
           aria-pressed={shuffleEnabled}
           disabled={disabled}
@@ -29,15 +30,17 @@ export function PlaybackControls({ compact = false }: { compact?: boolean }) {
           <Shuffle size={17} />
         </IconButton>
       )}
-      <IconButton label="Bài trước" disabled={disabled} onClick={previous}>
+      <IconButton label="Previous song" disabled={disabled} onClick={previous}>
         <SkipBack size={compact ? 22 : 18} fill="currentColor" />
       </IconButton>
-      <button
+      <motion.button
         className="player-play-button"
         type="button"
-        aria-label={playing || busy ? 'Tạm dừng' : 'Phát'}
+        aria-label={playing || busy ? 'Pause' : 'Play'}
         disabled={disabled}
         onClick={togglePlay}
+        whileHover={{ scale: disabled ? 1 : 1.05 }}
+        whileTap={{ scale: disabled ? 1 : 0.95 }}
       >
         {busy ? (
           <LoaderCircle className="player-spinner" size={compact ? 24 : 20} />
@@ -46,14 +49,14 @@ export function PlaybackControls({ compact = false }: { compact?: boolean }) {
         ) : (
           <Play size={compact ? 24 : 20} fill="currentColor" />
         )}
-      </button>
-      <IconButton label="Bài tiếp" disabled={disabled} onClick={next}>
+      </motion.button>
+      <IconButton label="Next song" disabled={disabled} onClick={next}>
         <SkipForward size={compact ? 22 : 18} fill="currentColor" />
       </IconButton>
       {!compact && (
         <div className="repeat-control">
           <IconButton
-            label={`Chế độ lặp: ${repeatMode === 'off' ? 'tắt' : repeatMode === 'all' ? 'tất cả' : 'một bài'}`}
+            label={`Repeat mode: ${repeatMode === 'off' ? 'off' : repeatMode === 'all' ? 'all' : 'one'}`}
             active={repeatMode !== 'off'}
             aria-pressed={repeatMode !== 'off'}
             disabled={disabled}

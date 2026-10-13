@@ -19,9 +19,6 @@ export function CatalogSection(props: Props) {
     <section className="section" aria-labelledby={`section-${props.index}`}>
       <div className="section-heading">
         <div className="section-title-wrap">
-          <span className="caption section-kicker">
-            {props.index} // {props.kicker}
-          </span>
           <h2 id={`section-${props.index}`}>{props.title}</h2>
         </div>
       </div>

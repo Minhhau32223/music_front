@@ -11,7 +11,7 @@ import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 export function LikedSongsPage() {
   const likedSongs = useLikedSongs()
   const { playQueue } = usePlayer()
-  useDocumentTitle('Bài hát đã thích')
+  useDocumentTitle('Liked songs')
 
   if (likedSongs.isLoading) return <DetailPageSkeleton />
   if (likedSongs.isError) {
@@ -26,16 +26,16 @@ export function LikedSongsPage() {
           <Heart size={72} fill="currentColor" />
         </div>
         <div className="detail-hero-copy">
-          <span className="caption detail-eyebrow">Playlist cá nhân</span>
-          <h1>Bài hát đã thích</h1>
-          <p className="detail-meta">{songs.length} bài hát</p>
+          <span className="caption detail-eyebrow">Personal playlist</span>
+          <h1>Liked songs</h1>
+          <p className="detail-meta">{songs.length} songs</p>
           <div className="hero-actions">
             <Button
               size="lg"
               disabled={!songs.length}
               onClick={() => playQueue(songs.map(toPlayableTrack), 0)}
             >
-              <Play size={17} fill="currentColor" /> Phát tất cả
+              <Play size={17} fill="currentColor" /> Play all
             </Button>
           </div>
         </div>
@@ -43,17 +43,17 @@ export function LikedSongsPage() {
 
       <section className="section detail-section" aria-labelledby="liked-list-heading">
         <h2 id="liked-list-heading" className="sr-only">
-          Danh sách bài hát đã thích
+          Liked songs
         </h2>
         {songs.length ? (
           <DetailTrackList songs={songs} context="liked-songs" />
         ) : (
           <div className="library-empty">
             <Heart size={30} />
-            <h3>Danh sách này đang trống</h3>
-            <p>Nhấn biểu tượng trái tim ở bài hát bạn muốn lưu.</p>
+            <h3>This list is empty</h3>
+            <p>Press the heart icon on a song to save it here.</p>
             <Link className="button primary" to="/search">
-              Khám phá âm nhạc
+              Explore music
             </Link>
           </div>
         )}

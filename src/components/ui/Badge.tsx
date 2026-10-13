@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { cn } from '@/lib/cn'
+import { motion } from 'framer-motion'
 
 export function Badge({
   children,
@@ -10,5 +11,13 @@ export function Badge({
   accent?: boolean
   className?: string
 }) {
-  return <span className={cn('badge', accent && 'accent', className)}>{children}</span>
+  return (
+    <motion.span 
+      className={cn('badge', accent && 'accent', className)}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+    >
+      {children}
+    </motion.span>
+  )
 }

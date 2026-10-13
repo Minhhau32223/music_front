@@ -1,4 +1,4 @@
-const configuredApiUrl = import.meta.env.VITE_API_URL?.trim()
+const configuredApiUrl = import.meta.env.VITE_API_URL?.trim().replace(/\/+$/, '')
 const isProduction = import.meta.env.PROD
 const isLocalhostUrl = configuredApiUrl?.match(/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?\b/i)
 
@@ -11,5 +11,3 @@ if (isProduction && isLocalhostUrl) {
 export const env = {
   apiBaseUrl: configuredApiUrl || '/api',
 } as const
-
-

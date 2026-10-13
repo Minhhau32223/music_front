@@ -1,5 +1,7 @@
 import { ChevronDown, ListMusic } from 'lucide-react'
-import { useEffect } from 'react'
+import { motion } from 'framer-motion'
+import { useCallback, useEffect } from 'react'
+import { usePlayerPanelFocus } from '@/hooks/usePlayerPanelFocus'
 import { Artwork } from '@/components/shared/Artwork'
 import { IconButton } from '@/components/ui/IconButton'
 import { selectCurrentTrack, usePlayerStore } from '../store/player.store'
@@ -8,32 +10,42 @@ import { PlaybackErrorState } from './PlaybackErrorState'
 import { ProgressBar } from './ProgressBar'
 import { Link } from 'react-router-dom'
 import { PlayerLikeButton } from './PlayerLikeButton'
+import { TrackActions } from './TrackActions'
+import { useLyricsStore } from '../store/lyrics.store'
 
 export function ExpandedPlayer() {
   const open = usePlayerStore((state) => state.isExpanded)
   const track = usePlayerStore(selectCurrentTrack)
   const setExpanded = usePlayerStore((state) => state.setExpanded)
   const setQueueOpen = usePlayerStore((state) => state.setQueueOpen)
+  const queueOpen = usePlayerStore((state) => state.isQueueOpen)
+  const close = useCallback(() => setExpanded(false), [setExpanded])
+  const panelRef = usePlayerPanelFocus(open && !queueOpen, close)
 
   useEffect(() => {
     if (!open) return
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setExpanded(false)
+    document.body.dataset.playerExpanded = 'true'
+    return () => {
+      delete document.body.dataset.playerExpanded
     }
-    document.addEventListener('keydown', closeOnEscape)
-    return () => document.removeEventListener('keydown', closeOnEscape)
-  }, [open, setExpanded])
+  }, [open])
 
   if (!open || !track) return null
 
   return (
-    <section className="expanded-player" role="dialog" aria-modal="true" aria-label="Đang phát">
+    <section
+      ref={panelRef}
+      className="expanded-player"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Now playing"
+    >
       <header className="expanded-player-header">
-        <IconButton label="Thu gọn trình phát" tooltip={false} onClick={() => setExpanded(false)}>
+        <IconButton label="Collapse player" tooltip={false} onClick={() => setExpanded(false)}>
           <ChevronDown size={24} />
         </IconButton>
-        <span className="caption">Đang phát</span>
-        <span aria-hidden="true" />
+        <span className="caption">Now playing</span>
+        <TrackActions track={track} />
       </header>
       <div className="expanded-player-body">
         <div className="expanded-player-art">
@@ -60,13 +72,22 @@ export function ExpandedPlayer() {
           </p>
         </div>
         <PlayerLikeButton track={track} showLabel />
+        <motion.button
+          type="button"
+          className="expanded-queue-button"
+          onClick={() => useLyricsStore.getState().open('current')}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          Lyrics
+        </motion.button>
         <ProgressBar expanded />
         <PlaybackControls />
         <PlaybackErrorState />
-        <button className="expanded-queue-button" type="button" onClick={() => setQueueOpen(true)}>
+        <motion.button className="expanded-queue-button" type="button" onClick={() => setQueueOpen(true)} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
           <ListMusic size={19} />
-          Hàng đợi
-        </button>
+          Queue
+        </motion.button>
       </div>
     </section>
   )

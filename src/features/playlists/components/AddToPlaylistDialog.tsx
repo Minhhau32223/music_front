@@ -31,21 +31,21 @@ export function AddToPlaylistDialog({ open, song, onClose }: AddToPlaylistDialog
     <Modal
       open={open}
       onClose={() => !addSong.isPending && onClose()}
-      title="Thêm vào playlist"
+      title="Add to playlist"
       description={song.title}
     >
       {playlists.isLoading || currentUser.isLoading ? (
         <div className="dialog-state" role="status">
-          Đang tải playlist…
+          Loading playlists…
         </div>
       ) : playlists.isError || currentUser.isError ? (
         <div className="dialog-state error" role="alert">
-          Không thể tải playlist của bạn.
+          Unable to load your playlists.
         </div>
       ) : owned.length === 0 ? (
         <div className="dialog-empty">
           <ListMusic size={26} />
-          <p>Bạn chưa có playlist nào. Hãy tạo playlist trong Thư viện trước.</p>
+          <p>You do not have any playlists yet. Create one in Your Library first.</p>
         </div>
       ) : (
         <div className="playlist-picker" role="list">

@@ -15,7 +15,7 @@ const track: PlayableTrack = {
   title: 'Night Signal',
   artistId: 2,
   artistName: 'Nocturne',
-  audioUrl: 'https://audio.test/night-signal.mp3',
+  playbackUrl: 'https://audio.test/night-signal.mp3',
   durationMs: 180_000,
 }
 
@@ -57,19 +57,19 @@ describe('player controls', () => {
   it('renders real metadata and exposes accessible playback controls', () => {
     renderPlayer()
     expect(screen.getByText('Night Signal')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Phát' })).toBeEnabled()
-    expect(screen.getByRole('slider', { name: 'Tiến độ bài hát' })).toHaveAttribute(
+    expect(screen.getByRole('button', { name: 'Play' })).toBeEnabled()
+    expect(screen.getByRole('slider', { name: 'Song progress' })).toHaveAttribute(
       'aria-valuetext',
-      '0:00 trên 3:00',
+      '0:00 of 3:00',
     )
   })
 
   it('seeks and changes volume through native keyboard-accessible sliders', () => {
     renderPlayer()
-    fireEvent.change(screen.getByRole('slider', { name: 'Tiến độ bài hát' }), {
+    fireEvent.change(screen.getByRole('slider', { name: 'Song progress' }), {
       target: { value: '45000' },
     })
-    fireEvent.change(screen.getByRole('slider', { name: 'Âm lượng' }), {
+    fireEvent.change(screen.getByRole('slider', { name: 'Volume' }), {
       target: { value: '35' },
     })
     expect(audioEngine.seek).toHaveBeenCalledWith(45_000)

@@ -1,13 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
-import { libraryApi } from '../api/library.api'
-import { libraryKeys } from '../queries/library.query-keys'
-
+import { followedQuery } from '../queries/private.queries'
+import { useAuthStore } from '@/features/auth/store/auth.store'
 export function useFollowedArtists() {
-  return useQuery({
-    queryKey: libraryKeys.followedArtists(),
-    queryFn: ({ signal }) => libraryApi.getFollowedArtists(signal),
-    staleTime: 120_000,
-    gcTime: 1_800_000,
-    retry: 1,
-  })
+  const guest = useAuthStore((s) => s.status === 'unauthenticated')
+  return useQuery({ ...followedQuery(), enabled: !guest })
 }

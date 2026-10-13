@@ -45,7 +45,11 @@ describe('catalog mapping', () => {
   it('maps backend song and duration to the stable player contract', () => {
     const song = mapSongDto(songDto)
     expect(song).toMatchObject({ title: 'Night Signal', durationMs: 201000, artworkUrl: undefined })
-    expect(toPlayableTrack(song)).toMatchObject({ artistId: 3, albumId: 2, audioUrl: songDto.file })
+    expect(toPlayableTrack(song)).toMatchObject({
+      artistId: 3,
+      albumId: 2,
+      playbackUrl: 'http://localhost:8000/api/stream/song/1/play',
+    })
   })
   it('maps nullable artist and album fields', () => {
     expect(mapArtistDto({ id: 1, name: 'A', bio: null, profileImage: null })).toEqual({

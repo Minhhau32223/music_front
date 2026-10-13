@@ -1,12 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { albumApi } from '../api/album.api'
-import { albumKeys } from '../queries/album.query-keys'
+import { albumListQuery } from '@/features/catalog/queries'
 export function useAlbums() {
-  return useQuery({
-    queryKey: albumKeys.list(),
-    queryFn: albumApi.getAlbums,
-    staleTime: 300_000,
-    gcTime: 1_800_000,
-    retry: 1,
-  })
+  return useQuery(albumListQuery())
 }

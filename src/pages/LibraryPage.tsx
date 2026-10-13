@@ -7,6 +7,7 @@ import { ArtistCard } from '@/features/artists/components/ArtistCard'
 import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
 import { useLikedSongs } from '@/features/favorites/hooks/useLikedSongs'
 import { useFollowedArtists } from '@/features/library/hooks/useFollowedArtists'
+import { useRecentlyPlayed } from '@/features/history/hooks/useRecentlyPlayed'
 import { PlaylistCard } from '@/features/playlists/components/PlaylistCard'
 import { PlaylistFormDialog } from '@/features/playlists/components/PlaylistFormDialog'
 import { usePlaylists } from '@/features/playlists/hooks/usePlaylists'
@@ -16,10 +17,10 @@ const libraryTypes = ['all', 'playlists', 'liked', 'artists'] as const
 type LibraryType = (typeof libraryTypes)[number]
 
 const typeLabels: Record<LibraryType, string> = {
-  all: 'Tất cả',
+  all: 'All',
   playlists: 'Playlist',
-  liked: 'Bài hát đã thích',
-  artists: 'Nghệ sĩ',
+  liked: 'Liked songs',
+  artists: 'Artists',
 }
 
 export function LibraryPage() {
@@ -29,12 +30,13 @@ export function LibraryPage() {
   const playlists = usePlaylists()
   const likedSongs = useLikedSongs()
   const followedArtists = useFollowedArtists()
+  const recentlyPlayed = useRecentlyPlayed()
   const requestedType = searchParams.get('type')
   const type: LibraryType = libraryTypes.includes(requestedType as LibraryType)
     ? (requestedType as LibraryType)
     : 'all'
   const sort = searchParams.get('sort') === 'az' ? 'az' : 'default'
-  useDocumentTitle('Thư viện')
+  useDocumentTitle('Your library')
 
   const ownPlaylists = useMemo(() => {
     const items =
@@ -68,17 +70,17 @@ export function LibraryPage() {
     <div className="page library-page">
       <header className="library-header">
         <div>
-          <span className="caption section-kicker">Bộ sưu tập cá nhân</span>
-          <h1>Thư viện của bạn</h1>
-          <p>Playlist, bài hát yêu thích và nghệ sĩ bạn đang theo dõi.</p>
+          <span className="caption section-kicker">Personal collection</span>
+          <h1>Your library</h1>
+          <p>Playlists, liked songs, and followed artists.</p>
         </div>
         <Button onClick={() => setCreateOpen(true)}>
-          <Plus size={17} /> Tạo playlist
+          <Plus size={17} /> Create playlist
         </Button>
       </header>
 
       <div className="library-toolbar">
-        <div className="library-tabs" role="tablist" aria-label="Loại nội dung">
+        <div className="library-tabs" role="tablist" aria-label="Content type">
           {libraryTypes.map((item) => (
             <button
               type="button"
@@ -93,9 +95,9 @@ export function LibraryPage() {
           ))}
         </div>
         <label className="library-sort">
-          <span>Sắp xếp</span>
+          <span>Sort</span>
           <select value={sort} onChange={(event) => setParam('sort', event.target.value)}>
-            <option value="default">Mặc định</option>
+            <option value="default">Default</option>
             <option value="az">A–Z</option>
           </select>
         </label>
@@ -128,9 +130,9 @@ export function LibraryPage() {
             ) : (
               <LibraryEmpty
                 icon={<Library size={28} />}
-                title="Chưa có playlist"
-                message="Tạo playlist đầu tiên để bắt đầu sắp xếp âm nhạc."
-                action={<Button onClick={() => setCreateOpen(true)}>Tạo playlist</Button>}
+                title="No playlists yet"
+                message="Create your first playlist to organize your music."
+                action={<Button onClick={() => setCreateOpen(true)}>Create playlist</Button>}
               />
             )}
           </section>
@@ -141,9 +143,9 @@ export function LibraryPage() {
             <div className="section-heading">
               <div className="section-title-wrap">
                 <span className="caption section-kicker">02</span>
-                <h2 id="library-liked">Bài hát đã thích</h2>
+                <h2 id="library-liked">Liked songs</h2>
               </div>
-              {type === 'all' && songs.length > 0 && <Link to="/liked-songs">Xem tất cả</Link>}
+              {type === 'all' && songs.length > 0 && <Link to="/liked-songs">View all</Link>}
             </div>
             {likedSongs.isLoading ? (
               <LibraryLoading />
@@ -157,11 +159,11 @@ export function LibraryPage() {
             ) : (
               <LibraryEmpty
                 icon={<Heart size={28} />}
-                title="Chưa có bài hát yêu thích"
-                message="Nhấn biểu tượng trái tim ở một bài hát để lưu tại đây."
+                title="No liked songs yet"
+                message="Press the heart icon on a song to save it here."
                 action={
                   <Link className="button primary" to="/search">
-                    Khám phá
+                    Explore
                   </Link>
                 }
               />
@@ -169,12 +171,42 @@ export function LibraryPage() {
           </section>
         )}
 
+        {type === 'all' && (
+          <section className="section library-section" aria-labelledby="library-recent">
+            <div className="section-heading">
+              <div className="section-title-wrap">
+                <span className="caption section-kicker">04</span>
+                <h2 id="library-recent">Recently played</h2>
+              </div>
+            </div>
+            {recentlyPlayed.isLoading ? (
+              <LibraryLoading />
+            ) : recentlyPlayed.isError ? (
+              <LibraryError onRetry={() => void recentlyPlayed.refetch()} />
+            ) : recentlyPlayed.data?.length ? (
+              <ul className="detail-track-list">
+                {recentlyPlayed.data.slice(0, 5).map((item) => (
+                  <li key={`${item.songId}-${item.playedAt}`}>
+                    <Link to={`/song/${item.songId}`}>{item.songName}</Link>
+                    <span>{item.artistName ?? 'Unknown artist'}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <LibraryEmpty
+                icon={<Library size={28} />}
+                title="No listening history yet"
+                message="Songs you play will appear here."
+              />
+            )}
+          </section>
+        )}
         {(type === 'all' || type === 'artists') && (
           <section className="section library-section" aria-labelledby="library-artists">
             <div className="section-heading">
               <div className="section-title-wrap">
                 <span className="caption section-kicker">03</span>
-                <h2 id="library-artists">Nghệ sĩ đang theo dõi</h2>
+                <h2 id="library-artists">Followed artists</h2>
               </div>
             </div>
             {followedArtists.isLoading ? (
@@ -190,8 +222,8 @@ export function LibraryPage() {
             ) : (
               <LibraryEmpty
                 icon={<Library size={28} />}
-                title="Chưa theo dõi nghệ sĩ"
-                message="Theo dõi nghệ sĩ để tìm lại họ nhanh hơn."
+                title="No followed artists yet"
+                message="Follow artists to find them faster."
               />
             )}
           </section>
@@ -205,7 +237,7 @@ export function LibraryPage() {
 function LibraryLoading() {
   return (
     <div className="library-loading" role="status">
-      Đang tải…
+      Loading…
     </div>
   )
 }
@@ -213,10 +245,10 @@ function LibraryLoading() {
 function LibraryError({ onRetry }: { onRetry: () => void }) {
   return (
     <div className="library-empty" role="alert">
-      <h3>Không thể tải nội dung</h3>
-      <p>Kiểm tra kết nối tới NOCTURNE rồi thử lại.</p>
+      <h3>Unable to load your library</h3>
+      <p>Check your connection to NOCTURNE and try again.</p>
       <Button variant="secondary" onClick={onRetry}>
-        Thử lại
+        Try again
       </Button>
     </div>
   )

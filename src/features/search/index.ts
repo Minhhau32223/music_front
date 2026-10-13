@@ -1,1 +1,6 @@
-export {}
+export { searchApi, normalizeSearchQuery } from './api/search.api'
+export { useSearch, MIN_SEARCH_LENGTH } from './hooks/useSearch'
+export { useDebouncedValue } from './hooks/useDebouncedValue'
+export { useRecentSearches } from './hooks/useRecentSearches'
+export { clearRecentSearches } from './recent-searches'
+export type { SearchResult } from './types/search.types'

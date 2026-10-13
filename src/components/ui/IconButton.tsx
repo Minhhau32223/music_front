@@ -1,8 +1,9 @@
-import type { ButtonHTMLAttributes, ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { cn } from '@/lib/cn'
 import { Tooltip } from './Tooltip'
+import { motion, type HTMLMotionProps } from 'framer-motion'
 
-type IconButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+type IconButtonProps = Omit<HTMLMotionProps<'button'>, 'children'> & {
   label: string
   children: ReactNode
   active?: boolean
@@ -15,17 +16,21 @@ export function IconButton({
   active,
   tooltip = true,
   className,
+  disabled,
   ...props
 }: IconButtonProps) {
   const button = (
-    <button
+    <motion.button
       type="button"
       aria-label={label}
       className={cn('icon-button', active && 'active', className)}
+      whileHover={{ scale: disabled ? 1 : 1.1 }}
+      whileTap={{ scale: disabled ? 1 : 0.9 }}
+      disabled={disabled}
       {...props}
     >
       {children}
-    </button>
+    </motion.button>
   )
   return tooltip ? <Tooltip label={label}>{button}</Tooltip> : button
 }

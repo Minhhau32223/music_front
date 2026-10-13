@@ -29,9 +29,9 @@ export function useCreatePlaylist() {
         current.some((item) => item.id === playlist.id) ? current : [playlist, ...current],
       )
       queryClient.setQueryData(playlistKeys.detail(playlist.id), playlist)
-      showToast(`Đã tạo playlist “${playlist.name}”.`)
+      showToast(`Created playlist “${playlist.name}”.`)
     },
-    onError: () => showToast('Không thể tạo playlist. Vui lòng thử lại.', 'error'),
+    onError: () => showToast('Unable to create playlist. Please try again.', 'error'),
     onSettled: () => void queryClient.invalidateQueries({ queryKey: playlistKeys.list() }),
   })
 }
@@ -61,11 +61,11 @@ export function useRenamePlaylist(playlistId: number) {
       if (snapshot?.list) queryClient.setQueryData(playlistKeys.list(), snapshot.list)
       if (snapshot?.detail)
         queryClient.setQueryData(playlistKeys.detail(playlistId), snapshot.detail)
-      showToast('Không thể đổi tên playlist. Thay đổi đã được hoàn tác.', 'error')
+      showToast('Unable to rename playlist. Your change was reverted.', 'error')
     },
     onSuccess: (playlist) => {
       queryClient.setQueryData(playlistKeys.detail(playlistId), playlist)
-      showToast('Đã cập nhật playlist.')
+      showToast('Playlist updated.')
     },
     onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: playlistKeys.list() })
@@ -99,11 +99,11 @@ export function useDeletePlaylist() {
         queryClient.setQueryData(playlistKeys.detail(playlistId), snapshot.detail)
       if (snapshot?.tracks)
         queryClient.setQueryData(playlistKeys.tracks(playlistId), snapshot.tracks)
-      showToast('Không thể xóa playlist. Danh sách đã được khôi phục.', 'error')
+      showToast('Unable to delete playlist. Your list was restored.', 'error')
     },
     onSuccess: (_data, playlistId) => {
       queryClient.removeQueries({ queryKey: playlistKeys.detail(playlistId) })
-      showToast('Đã xóa playlist.')
+      showToast('Playlist deleted.')
     },
     onSettled: () => void queryClient.invalidateQueries({ queryKey: playlistKeys.list() }),
   })
@@ -160,10 +160,15 @@ export function useAddSongToPlaylist(song: Song) {
       if (snapshot?.list) queryClient.setQueryData(playlistKeys.list(), snapshot.list)
       if (snapshot?.detail)
         queryClient.setQueryData(playlistKeys.detail(playlistId), snapshot.detail)
-      showToast('Không thể thêm bài hát vào playlist. Thay đổi đã được hoàn tác.', 'error')
+      showToast(
+        isApiError(_error) && _error.status === 403
+          ? 'You do not have permission to edit this playlist.'
+          : 'Unable to add the song to the playlist. Your change was reverted.',
+        'error',
+      )
     },
     onSuccess: (result) =>
-      showToast(result.duplicate ? 'Bài hát đã có trong playlist này.' : 'Đã thêm vào playlist.'),
+      showToast(result.duplicate ? 'The song is already in this playlist.' : 'Added to playlist.'),
     onSettled: (_data, _error, playlistId) => {
       void queryClient.invalidateQueries({ queryKey: playlistKeys.tracks(playlistId) })
       void queryClient.invalidateQueries({ queryKey: playlistKeys.detail(playlistId) })
@@ -207,9 +212,14 @@ export function useRemoveSongFromPlaylist(playlistId: number) {
       if (snapshot?.list) queryClient.setQueryData(playlistKeys.list(), snapshot.list)
       if (snapshot?.detail)
         queryClient.setQueryData(playlistKeys.detail(playlistId), snapshot.detail)
-      showToast('Không thể xóa bài hát. Thay đổi đã được hoàn tác.', 'error')
+      showToast(
+        isApiError(_error) && _error.status === 403
+          ? 'You do not have permission to edit this playlist.'
+          : 'Unable to remove the song. Your change was reverted.',
+        'error',
+      )
     },
-    onSuccess: () => showToast('Đã xóa bài hát khỏi playlist.'),
+    onSuccess: () => showToast('Song removed from playlist.'),
     onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: playlistKeys.tracks(playlistId) })
       void queryClient.invalidateQueries({ queryKey: playlistKeys.detail(playlistId) })

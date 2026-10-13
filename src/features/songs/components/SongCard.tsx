@@ -5,6 +5,7 @@ import type { Song } from '../types/song.types'
 import { queryClient } from '@/lib/query-client'
 import { songDetailQuery } from '../queries/song.queries'
 import { useIntentPrefetch } from '@/hooks/useIntentPrefetch'
+import { SongContextMenu } from '@/components/shared/SongContextMenu'
 
 type SongCardProps = {
   song: Song
@@ -20,6 +21,7 @@ export function SongCard({ song, active, playing, loading, onPlay }: SongCardPro
   })
   return (
     <article
+      data-song-surface
       className={`music-card${active ? ' active-track' : ''}`}
       onPointerEnter={(event) => event.pointerType !== 'touch' && intent.schedule()}
       onPointerLeave={intent.cancel}
@@ -30,7 +32,7 @@ export function SongCard({ song, active, playing, loading, onPlay }: SongCardPro
         <button
           type="button"
           className={`card-play${active ? ' active' : ''}`}
-          aria-label={playing || loading ? `Tạm dừng ${song.title}` : `Phát ${song.title}`}
+          aria-label={playing || loading ? `Pause ${song.title}` : `Play ${song.title}`}
           onClick={onPlay}
         >
           {loading ? (
@@ -48,6 +50,7 @@ export function SongCard({ song, active, playing, loading, onPlay }: SongCardPro
       <Link className="card-subtitle" to={`/artist/${song.artist.id}`}>
         {song.artist.name}
       </Link>
+      <SongContextMenu song={song} onPlayNow={onPlay} />
     </article>
   )
 }

@@ -21,8 +21,8 @@ export function isPlayableTrack(value: unknown): value is PlayableTrack {
     typeof track.artistId === 'number' &&
     Number.isFinite(track.artistId) &&
     typeof track.artistName === 'string' &&
-    typeof track.audioUrl === 'string' &&
-    track.audioUrl.trim().length > 0 &&
+    typeof track.playbackUrl === 'string' &&
+    track.playbackUrl.trim().length > 0 &&
     typeof track.durationMs === 'number' &&
     Number.isFinite(track.durationMs) &&
     track.durationMs >= 0
@@ -30,7 +30,7 @@ export function isPlayableTrack(value: unknown): value is PlayableTrack {
 }
 
 export function isSameTrack(left?: PlayableTrack | null, right?: PlayableTrack | null) {
-  return Boolean(left && right && left.id === right.id && left.audioUrl === right.audioUrl)
+  return Boolean(left && right && left.id === right.id && left.playbackUrl === right.playbackUrl)
 }
 
 export function areQueuesEqual(left: PlayableTrack[], right: PlayableTrack[]) {
@@ -49,39 +49,39 @@ export function normalizePlaybackError(
   fallbackCode: PlayerError['code'] = 'UNKNOWN',
 ): PlayerError {
   if (typeof navigator !== 'undefined' && navigator.onLine === false) {
-    return { code: 'NETWORK_ERROR', message: 'Không có kết nối mạng.', trackId }
+    return { code: 'NETWORK_ERROR', message: 'No network connection.', trackId }
   }
   const message = error instanceof Error ? error.message.toLowerCase() : ''
   if (message.includes('not supported') || message.includes('format')) {
     return {
       code: 'UNSUPPORTED_FORMAT',
-      message: 'Định dạng âm thanh này không được hỗ trợ.',
+      message: 'This audio format is not supported.',
       trackId,
     }
   }
   return {
     code: fallbackCode,
-    message: 'Không thể phát bài hát này.',
+    message: 'Unable to play this song.',
     trackId,
   }
 }
 
 export function normalizeMediaError(code: number | undefined, trackId?: number): PlayerError {
   if (typeof navigator !== 'undefined' && navigator.onLine === false) {
-    return { code: 'NETWORK_ERROR', message: 'Không có kết nối mạng.', trackId }
+    return { code: 'NETWORK_ERROR', message: 'No network connection.', trackId }
   }
   if (code === 4) {
     return {
       code: 'UNSUPPORTED_FORMAT',
-      message: 'Định dạng âm thanh này không được hỗ trợ.',
+      message: 'This audio format is not supported.',
       trackId,
     }
   }
   if (code === 2) {
-    return { code: 'NETWORK_ERROR', message: 'Kết nối âm thanh bị gián đoạn.', trackId }
+    return { code: 'NETWORK_ERROR', message: 'Audio connection was interrupted.', trackId }
   }
   if (code === 3) {
-    return { code: 'AUDIO_LOAD_FAILED', message: 'Không thể đọc tệp âm thanh.', trackId }
+    return { code: 'AUDIO_LOAD_FAILED', message: 'Unable to read the audio file.', trackId }
   }
-  return { code: 'AUDIO_LOAD_FAILED', message: 'Không thể tải bài hát này.', trackId }
+  return { code: 'AUDIO_LOAD_FAILED', message: 'Unable to load this song.', trackId }
 }
