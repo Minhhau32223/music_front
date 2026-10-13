@@ -38,6 +38,7 @@ The frontend reads the backend URL only from the Vite variable `VITE_API_URL`.
 Local development:
 
 ```env
+# .env.local
 VITE_API_URL=http://localhost:8000/api
 ```
 
