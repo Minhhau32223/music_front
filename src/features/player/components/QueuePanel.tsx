@@ -1,6 +1,6 @@
 import { ListMusic, Trash2, X } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { usePlayerPanelFocus } from '@/hooks/usePlayerPanelFocus'
 import { IconButton } from '@/components/ui/IconButton'
 import { selectCurrentTrack, usePlayerStore } from '../store/player.store'
@@ -20,7 +20,48 @@ export function QueuePanel() {
   const remove = usePlayerStore((state) => state.removeFromQueue)
   const clearUpcoming = usePlayerStore((state) => state.clearUpcoming)
   const close = useCallback(() => setOpen(false), [setOpen])
-  const panelRef = usePlayerPanelFocus(open, close)
+  const dragStartY = useRef<number | null>(null)
+  const queueHistoryEntry = useRef(false)
+
+  useEffect(() => {
+    if (!open || typeof window === 'undefined') {
+      queueHistoryEntry.current = false
+      return
+    }
+
+    if (!queueHistoryEntry.current) {
+      const marker = { ...(window.history.state ?? {}), nocturneQueue: true }
+      window.history.pushState(marker, '', window.location.href)
+      queueHistoryEntry.current = true
+    }
+
+    const closeFromBrowserBack = () => {
+      queueHistoryEntry.current = false
+      usePlayerStore.getState().setQueueOpen(false)
+    }
+    window.addEventListener('popstate', closeFromBrowserBack)
+    return () => window.removeEventListener('popstate', closeFromBrowserBack)
+  }, [open])
+
+  const dismiss = useCallback(() => {
+    if (queueHistoryEntry.current && window.history.state?.nocturneQueue) {
+      window.history.back()
+      return
+    }
+    close()
+  }, [close])
+  const panelRef = usePlayerPanelFocus(open, dismiss)
+
+  const beginSheetDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType !== 'touch') return
+    dragStartY.current = event.clientY
+    event.currentTarget.setPointerCapture?.(event.pointerId)
+  }
+
+  const finishSheetDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (dragStartY.current !== null && event.clientY - dragStartY.current >= 88) dismiss()
+    dragStartY.current = null
+  }
 
   useEffect(() => {
     if (!open) return
@@ -35,22 +76,42 @@ export function QueuePanel() {
     : queue.map((_, index) => index).slice(currentIndex + 1)
 
   return (
-    <aside
-      ref={panelRef}
-      inert={!open}
-      role="dialog"
-      aria-modal={open}
-      className="player-queue-panel"
-      data-open={open}
-      aria-label="Music queue"
-      aria-hidden={!open}
-    >
+    <>
+      <button
+        type="button"
+        className="queue-panel-backdrop"
+        aria-label="Close queue"
+        tabIndex={open ? 0 : -1}
+        onClick={dismiss}
+        data-open={open}
+      />
+      <aside
+        ref={panelRef}
+        inert={!open}
+        role="dialog"
+        aria-modal={open}
+        className="player-queue-panel"
+        data-open={open}
+        aria-label="Music queue"
+        aria-hidden={!open}
+      >
+      <div
+        className="queue-drag-region"
+        aria-hidden="true"
+        onPointerDown={beginSheetDrag}
+        onPointerUp={finishSheetDrag}
+        onPointerCancel={() => {
+          dragStartY.current = null
+        }}
+      >
+        <span className="queue-drag-handle" />
+      </div>
       <div className="queue-panel-header">
         <div>
           <span className="caption">Playback</span>
           <h2>Queue</h2>
         </div>
-        <IconButton label="Close queue" onClick={() => setOpen(false)}>
+        <IconButton label="Close queue" onClick={dismiss}>
           <X size={18} />
         </IconButton>
       </div>
@@ -102,6 +163,7 @@ export function QueuePanel() {
           </div>
         )}
       </div>
-    </aside>
+      </aside>
+    </>
   )
 }

@@ -1,8 +1,7 @@
 import { ChevronLeft, Compass, Home, Library, Plus, Search } from 'lucide-react'
 import { useState } from 'react'
 import { useAuthStore } from '@/features/auth/store/auth.store'
-import { useNavigate } from 'react-router-dom'
-import { NavLink } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { IconButton } from '@/components/ui/IconButton'
 import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
 import { PlaylistFormDialog } from '@/features/playlists/components/PlaylistFormDialog'
@@ -40,7 +39,7 @@ export function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle:
         animate={{ width: collapsed ? 72 : 248 }}
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       >
-        <div className="brand" aria-label="NOCTURNE">
+        <Link className="brand" to="/home" aria-label="Go to Home">
           <span className="brand-mark" aria-hidden="true" />
           <AnimatePresence>
             {!collapsed && (
@@ -55,7 +54,7 @@ export function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle:
               </motion.span>
             )}
           </AnimatePresence>
-        </div>
+        </Link>
         <nav className="sidebar-nav" aria-label="Main navigation">
           {navItems.map(({ to, label, icon: Icon }) => (
             <NavLink

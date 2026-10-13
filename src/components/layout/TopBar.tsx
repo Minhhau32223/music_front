@@ -28,7 +28,8 @@ export function TopBar() {
       </div>
       <motion.label
         className="top-search"
-        animate={{ width: isFocused ? 'min(420px, 45vw)' : 'min(360px, 40vw)', borderColor: isFocused ? 'var(--accent-primary)' : 'var(--border)' }}
+        data-focused={isFocused}
+        animate={{ width: isFocused ? 'min(420px, 45vw)' : 'min(360px, 40vw)' }}
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       >
         <Search size={17} style={{ color: isFocused ? 'var(--accent-primary)' : 'inherit' }} />

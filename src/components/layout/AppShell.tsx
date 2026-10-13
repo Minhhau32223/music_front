@@ -3,6 +3,7 @@ import { Outlet, useLocation, useNavigationType } from 'react-router-dom'
 import { OfflineBanner } from '@/components/shared/OfflineBanner'
 import { RouteErrorBoundary } from '@/components/shared/RouteErrorBoundary'
 import { GlobalPlayer, QueuePanel, usePlayerStore } from '@/features/player'
+import { useLyricsStore } from '@/features/player/store/lyrics.store'
 import { MobileNavigation } from './MobileNavigation'
 import { Sidebar } from './Sidebar'
 import { TopBar } from './TopBar'
@@ -15,6 +16,7 @@ export function AppShell() {
   const location = useLocation()
   const navigationType = useNavigationType()
   const queueOpen = usePlayerStore((state) => state.isQueueOpen)
+  const hasActiveTrack = usePlayerStore((state) => state.currentIndex >= 0)
 
   useLayoutEffect(() => {
     const main = mainRef.current
@@ -26,6 +28,11 @@ export function AppShell() {
   }, [location.key, navigationType])
 
   useEffect(() => {
+    // Playback state is persistent; route changes only dismiss transient player overlays.
+    usePlayerStore.getState().setQueueOpen(false)
+    usePlayerStore.getState().setExpanded(false)
+    useLyricsStore.getState().close()
+
     const routeTitle = getRouteTitle(location.pathname)
     document.title = `${routeTitle} — NOCTURNE`
     const frame = window.requestAnimationFrame(() =>
@@ -36,7 +43,7 @@ export function AppShell() {
 
   return (
     <div
-      className={`app-shell${collapsed ? ' sidebar-collapsed' : ''}${
+      className={`app-shell${collapsed ? ' sidebar-collapsed' : ''}${hasActiveTrack ? ' has-active-track' : ''}${
         queueOpen ? ' queue-panel-open' : ' queue-panel-closed'
       }`}
     >

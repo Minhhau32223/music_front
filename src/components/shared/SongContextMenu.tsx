@@ -7,7 +7,7 @@ import { useAuthStore } from '@/features/auth/store/auth.store'
 import { useLikedSongs } from '@/features/favorites/hooks/useLikedSongs'
 import { useToggleFavorite } from '@/features/favorites/hooks/useToggleFavorite'
 import { useLyricsStore } from '@/features/player/store/lyrics.store'
-import { usePlayer } from '@/features/player'
+import { usePlayer, usePlayerStore } from '@/features/player'
 import { toPlayableTrack, type Song } from '@/features/songs/types/song.types'
 import { getSongActions, type SongActionContext } from '@/features/songs/actions/song-actions'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -35,6 +35,11 @@ export function SongContextMenu({
   const toggle = useToggleFavorite(song)
   const navigate = useNavigate()
   const { playNext, addToQueue } = usePlayer()
+  const closePlayerOverlays = () => {
+    usePlayerStore.getState().setQueueOpen(false)
+    usePlayerStore.getState().setExpanded(false)
+    useLyricsStore.getState().close()
+  }
   const actions = getSongActions(
     context,
     {
@@ -52,8 +57,14 @@ export function SongContextMenu({
       like: () => toggle.mutate(!liked.data?.some((item) => item.id === song.id)),
       playlist: () => setPicker(true),
       lyrics: () => useLyricsStore.getState().open(context === 'player' ? 'current' : song.id),
-      artist: () => navigate(`/artist/${song.artist.id}`),
-      album: () => navigate(`/album/${song.album?.id}`),
+      artist: () => {
+        closePlayerOverlays()
+        navigate(`/artist/${song.artist.id}`)
+      },
+      album: () => {
+        closePlayerOverlays()
+        navigate(`/album/${song.album?.id}`)
+      },
       remove: () => playlistContext?.onRemove(),
     },
   )
