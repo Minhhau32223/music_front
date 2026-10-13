@@ -30,5 +30,24 @@ If you are developing a production application, we recommend enabling type-aware
 ```
 
 See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
-# music_front
-# music_front
+
+## Music App deployment
+
+The frontend reads the backend URL only from the Vite variable `VITE_API_URL`.
+
+Local development:
+
+```env
+VITE_API_URL=http://localhost:8000/api
+```
+
+Vercel:
+
+1. Import this repository as a Vite project.
+2. Build command: `npm run build`.
+3. Output directory: `dist`.
+4. Add `VITE_API_URL=https://<backend-domain>/api` in the Production environment variables.
+5. Redeploy after changing the variable; Vite injects it at build time.
+
+Do not commit real credentials or `.env` files. The backend must allow the final Vercel origin in `CORS_ALLOWED_ORIGINS` and use secure cross-site cookies in production.
+
