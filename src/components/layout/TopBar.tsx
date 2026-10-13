@@ -1,5 +1,5 @@
 import { ArrowLeft, ArrowRight, LogOut, Search } from 'lucide-react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Avatar } from '@/components/ui/Avatar'
 import { IconButton } from '@/components/ui/IconButton'
 import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
@@ -10,6 +10,7 @@ import { useState } from 'react'
 
 export function TopBar() {
   const navigate = useNavigate()
+  const location = useLocation()
   const currentUser = useCurrentUser()
   const logout = useLogout()
   const guest = useAuthStore((s) => s.status === 'unauthenticated')
@@ -26,23 +27,25 @@ export function TopBar() {
           <ArrowRight size={18} />
         </IconButton>
       </div>
-      <motion.label
-        className="top-search"
-        data-focused={isFocused}
-        animate={{ width: isFocused ? 'min(420px, 45vw)' : 'min(360px, 40vw)' }}
-        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-      >
-        <Search size={17} style={{ color: isFocused ? 'var(--accent-primary)' : 'inherit' }} />
-        <input
-          aria-label="Search"
-          placeholder="Songs, artists, or albums..."
-          onFocus={() => {
-            setIsFocused(true)
-            navigate('/search')
-          }}
-          onBlur={() => setIsFocused(false)}
-        />
-      </motion.label>
+      {location.pathname !== '/search' && (
+        <motion.label
+          className="top-search"
+          data-focused={isFocused}
+          animate={{ width: isFocused ? 'min(420px, 45vw)' : 'min(360px, 40vw)' }}
+          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        >
+          <Search size={17} style={{ color: isFocused ? 'var(--accent-primary)' : 'inherit' }} />
+          <input
+            aria-label="Search"
+            placeholder="Songs, artists, or albums..."
+            onFocus={() => {
+              setIsFocused(true)
+              navigate('/search')
+            }}
+            onBlur={() => setIsFocused(false)}
+          />
+        </motion.label>
+      )}
       <div className="top-actions">
         <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
           <Link className="profile" to={guest ? '/login' : '/profile'} aria-label="Profile">

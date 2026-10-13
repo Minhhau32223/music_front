@@ -2413,6 +2413,11 @@ img {
   font-size: 1rem;
   font-weight: 600;
 }
+.phase-seven-search .search-header input:focus,
+.phase-seven-search .search-header input:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
 .search-help {
   min-height: 18px;
   margin: 9px 4px 0;
