@@ -16,7 +16,7 @@ export function ApplicationPage() {
     query.isSuccess &&
     !query.data.some((item) => item.status === 'PENDING')
   return (
-    <div className="page">
+    <div className="page workspace-page">
       <h1>Artist application</h1>
       <WorkspaceState
         pending={query.isPending || user.isPending}

@@ -28,10 +28,15 @@ export function WorkspaceState({
   error: unknown
   retry: () => void
 }) {
-  if (pending) return <p role="status">Loading…</p>
+  if (pending)
+    return (
+      <p className="workspace-state" role="status">
+        Loading…
+      </p>
+    )
   if (error)
     return (
-      <div>
+      <div className="workspace-state" role="alert">
         <WorkspaceError error={error} />
         <Button onClick={retry}>Try again</Button>
       </div>

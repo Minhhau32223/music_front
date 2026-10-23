@@ -33,12 +33,7 @@ export function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle:
 
   return (
     <>
-      <motion.aside
-        className="sidebar"
-        initial={false}
-        animate={{ width: collapsed ? 72 : 248 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-      >
+      <aside className="sidebar">
         <Link className="brand" to="/home" aria-label="Go to Home">
           <span className="brand-mark" aria-hidden="true" />
           <AnimatePresence>
@@ -138,7 +133,7 @@ export function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle:
             )}
           </AnimatePresence>
         </div>
-      </motion.aside>
+      </aside>
       <IconButton
         label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         tooltip={false}

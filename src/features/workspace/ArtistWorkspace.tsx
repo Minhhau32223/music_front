@@ -195,7 +195,7 @@ export function ArtistWorkspace() {
   const profile = useQuery(profileQuery())
   const save = useWorkspaceMutation(workspaceApi.updateProfile, 'artist')
   return (
-    <div className="page">
+    <div className="page workspace-page">
       <h1>Artist studio</h1>
       <WorkspaceState
         pending={profile.isPending}

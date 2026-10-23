@@ -188,7 +188,7 @@ function ReviewQueue({ kind }: { kind: ReviewKind }) {
 }
 export function AdminWorkspace() {
   return (
-    <div className="page">
+    <div className="page workspace-page">
       <h1>Moderation</h1>
       <ReviewQueue kind="artist-applications" />
       <ReviewQueue kind="songs" />
