@@ -1,4 +1,4 @@
-# Spotify Clone - Modern Music Streaming Web Application
+# Musicapp - Modern Music Streaming Web Application
 
 > A high-performance, responsive music streaming Single Page Application inspired by Spotify. Built with React 19, TypeScript, Vite 8, and Tailwind CSS v4, featuring uninterrupted audio playback, synchronized lyrics, adaptive artwork backdrops, and creator/admin workspaces.
 
@@ -37,7 +37,7 @@
 
 ### 1.1 Introduction
 
-**Spotify Clone Frontend** is a modern music streaming client application designed to deliver an authentic Spotify desktop and mobile web experience. It provides listeners with real-time audio playback, interactive synchronized lyrics, a personalized catalog, and complete playlist management. In addition to standard listener capabilities, it includes dedicated portals for verified Artists to publish songs and for Administrators to moderate content.
+**Musicapp Frontend** is a modern music streaming client application designed to deliver an authentic Spotify desktop and mobile web experience. It provides listeners with real-time audio playback, interactive synchronized lyrics, a personalized catalog, and complete playlist management. In addition to standard listener capabilities, it includes dedicated portals for verified Artists to publish songs and for Administrators to moderate content.
 
 - **Problem Statement:** Building a web audio streaming application requires solving complex front-end challenges: maintaining persistent audio across client-side page transitions, extracting dynamic color palettes from artwork without performance degradation, synchronizing line-by-line lyrics with audio element timestamps, and managing JWT access token refreshes concurrently without disrupting user playback.
 - **Solution:** A decoupled React 19 Single Page Application (SPA) powered by Vite, Zustand for audio and session state, TanStack Query for server cache synchronization, and custom HTML5 Audio / MediaSession integrations.
@@ -55,7 +55,7 @@
 
 - **Included Features:** User authentication, personalized music feeds, song/album/artist discovery, persistent audio player bar, custom playlist CRUD, artist follow system, liked songs, playback tracking, artist application workflow, and admin moderation dashboard.
 - **Supported Platforms:** Modern web browsers (Chrome, Firefox, Safari, Edge) across Desktop, Tablet, and Mobile viewport sizes.
-- **Backend Service:** Connects to the [Spotify Clone Backend REST API](https://github.com/Minhhau32223/spotify_clone_back) (Spring Boot 3 + PostgreSQL + Cloudinary).
+- **Backend Service:** Connects to the [Musicapp Backend REST API](https://github.com/Minhhau32223/Music_project) (Spring Boot 3 + PostgreSQL + Cloudinary).
 - **Future Scope:** Offline audio caching via Service Workers and WebSockets for collaborative listening parties.
 
 ### 1.4 Project Status
@@ -302,7 +302,7 @@ Ensure you have the following installed on your local development machine:
 - **Node.js:** `v20.x` or `v22.x LTS`
 - **npm:** `v10.x+` (or `pnpm` / `yarn`)
 - **Git**
-- **Backend Service:** Running instance of [Spotify Clone Backend](https://github.com/Minhhau32223/spotify_clone_back) at `http://localhost:8000` (optional if using mock data).
+- **Backend Service:** Running instance of [Musicapp Backend](https://github.com/Minhhau32223/spotify_clone_back) at `http://localhost:8000` (optional if using mock data).
 
 ### 7.2 Clone the Repository
 
@@ -594,7 +594,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 - **Author:** Minh Hậu (Minhhau32223)
 - **GitHub:** [@Minhhau32223](https://github.com/Minhhau32223)
 - **Frontend Repository:** [https://github.com/Minhhau32223/music_front](https://github.com/Minhhau32223/music_front)
-- **Backend Repository:** [https://github.com/Minhhau32223/spotify_clone_back](https://github.com/Minhhau32223/spotify_clone_back)
+- **Backend Repository:** [https://github.com/Minhhau32223/Music_project](https://github.com/Minhhau32223/Music_project)
 
 ---
 
