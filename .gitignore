@@ -26,12 +26,19 @@ playwright-report/
 blob-report/
 .nyc_output/
 
+# Documentation & Internal Notes
+docs/
+*.md
+!README.md
+
 # Environment files & Secrets
 *.local
 .env
 .env.*
-!.env.example
-!.env.*.example
+*.env
+
+# Deployment & External metadata
+.openai/
 .stitch-reference
 
 # Editor and OS files

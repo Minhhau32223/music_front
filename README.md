@@ -1,13 +1,13 @@
-# Spotify Clone - Music Streaming Web Application
+# Spotify Clone - Modern Music Streaming Web Application
 
-> A high-performance, modern music streaming platform inspired by Spotify, featuring real-time audio playback, interactive lyrics, artist & admin management workspaces, and responsive design.
+> A high-performance, responsive music streaming Single Page Application inspired by Spotify. Built with React 19, TypeScript, Vite 8, and Tailwind CSS v4, featuring uninterrupted audio playback, synchronized lyrics, adaptive artwork backdrops, and creator/admin workspaces.
 
 [![React](https://img.shields.io/badge/React-19.x-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-8.x-646C99?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev/)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-v4-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.5-6DB33F?style=flat-square&logo=spring-boot&logoColor=white)](https://spring.io/projects/spring-boot)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![TanStack Query](https://img.shields.io/badge/TanStack_Query-v5-FF4154?style=flat-square&logo=react-query&logoColor=white)](https://tanstack.com/query)
+[![Zustand](https://img.shields.io/badge/Zustand-v5-764ABC?style=flat-square&logoColor=white)](https://zustand-demo.pmnd.rs/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](LICENSE)
 
 ---
@@ -37,32 +37,31 @@
 
 ### 1.1 Introduction
 
-**Spotify Clone** is a full-featured music streaming web application designed to replicate and expand upon the core user experience of Spotify. The platform enables users to discover, stream, organize, and interact with music tracks, albums, and playlists seamlessly across devices.
+**Spotify Clone Frontend** is a modern music streaming client application designed to deliver an authentic Spotify desktop and mobile web experience. It provides listeners with real-time audio playback, interactive synchronized lyrics, a personalized catalog, and complete playlist management. In addition to standard listener capabilities, it includes dedicated portals for verified Artists to publish songs and for Administrators to moderate content.
 
-- **Problem Statement:** Building modern streaming web applications requires handling asynchronous streaming playback, complex audio state management across page transitions, dynamic theme backdrop extraction, and multi-tier access control (Listeners, Creators, Administrators) without compromising speed or user experience.
-- **Solution:** A decoupled architecture featuring a reactive, state-driven React 19 Single Page Application (SPA) backed by a high-throughput Spring Boot 3 REST API with PostgreSQL, Redis caching, and Cloudinary media delivery.
-- **Target Audience:** Casual music listeners, independent music artists seeking a platform to publish and review their tracks, and platform moderators.
-- **Main Objectives:** Deliver zero-latency navigation, persistent uninterrupted background audio playback, resilient token refresh authorization, and intuitive content management.
+- **Problem Statement:** Building a web audio streaming application requires solving complex front-end challenges: maintaining persistent audio across client-side page transitions, extracting dynamic color palettes from artwork without performance degradation, synchronizing line-by-line lyrics with audio element timestamps, and managing JWT access token refreshes concurrently without disrupting user playback.
+- **Solution:** A decoupled React 19 Single Page Application (SPA) powered by Vite, Zustand for audio and session state, TanStack Query for server cache synchronization, and custom HTML5 Audio / MediaSession integrations.
+- **Target Users:** Music listeners, independent artists publishing audio tracks, and platform content moderators.
+- **Main Objectives:** Ensure zero playback interruption, instantaneous page transitions, responsive design across mobile/desktop, and robust error recovery.
 
 ### 1.2 Project Objectives
 
-- **High-Fidelity Audio Experience:** Continuous playback engine with queue management, progress seeking, volume normalization, lyrics display, and MediaSession OS integration.
-- **Enterprise-Grade Security:** JWT authentication with short-lived access tokens and secure HttpOnly cookie-based refresh tokens with concurrency-safe silent refreshes.
-- **Role-Based Collaboration:** Dedicated workflows allowing standard users to apply for artist status, artists to upload songs/albums, and administrators to review and approve submissions.
-- **Modern Performance:** Sub-second route transitions, optimistic UI updates via TanStack Query, code splitting, lazy loading, and CSS token-based dark mode aesthetics.
+- **Uninterrupted Audio Engine:** Global playback state machine persisting through all client route navigations, supporting track queueing, repeat modes, shuffle algorithms, and OS-level media keys.
+- **Adaptive Visual Aesthetics:** Dynamic backdrop engine that samples dominant color palettes from album artwork in real time to generate soft gradient atmospheres.
+- **Interactive Lyrics:** Timed, scroll-synchronized lyrics view supporting both full-screen theater mode and compact sidebar panels.
+- **Resilient Network Architecture:** Concurrency-safe Axios interceptor that queues pending requests during silent token refresh cycles, ensuring zero 401 logout loops.
 
 ### 1.3 Project Scope
 
-- **Included Features:** User authentication, personalized music feed, song/album/artist catalog exploration, full audio player, playlist creation & manipulation, artist follow system, favorite tracks, playback history, artist portal, admin review dashboard.
-- **Supported Platforms:** Modern web browsers (Google Chrome, Mozilla Firefox, Microsoft Edge, Safari) across Desktop, Tablet, and Mobile viewport sizes.
-- **Current Limitations:** Audio streaming relies on progressive download via direct CDN URLs rather than HLS/DASH adaptive bitrate streaming; payment subscriptions are simulated.
-- **Future Expansion:** WebSockets for collaborative real-time listening rooms, lossless audio streaming, and personalized AI recommendation feeds.
+- **Included Features:** User authentication, personalized music feeds, song/album/artist discovery, persistent audio player bar, custom playlist CRUD, artist follow system, liked songs, playback tracking, artist application workflow, and admin moderation dashboard.
+- **Supported Platforms:** Modern web browsers (Chrome, Firefox, Safari, Edge) across Desktop, Tablet, and Mobile viewport sizes.
+- **Backend Service:** Connects to the [Spotify Clone Backend REST API](https://github.com/Minhhau32223/spotify_clone_back) (Spring Boot 3 + PostgreSQL + Cloudinary).
+- **Future Scope:** Offline audio caching via Service Workers and WebSockets for collaborative listening parties.
 
 ### 1.4 Project Status
 
-- **Development Stage:** Active Production-Ready Prototype (Phase 10+ Complete).
-- **Implemented Modules:** Auth & Session Manager, Audio Player Engine, Catalog & Search Explorer, User Library, Artist Workspace, Admin Verification & Content Portal.
-- **Known Limitations:** Offline playback caching is limited by browser storage quotas; background playback on mobile Safari may be throttled when screen locks.
+- **Development Stage:** Production-Ready Client Application.
+- **Implemented Modules:** Auth & Role Guard System, Audio Engine & MediaSession, Full Catalog Explorer, User Library, Artist Studio, and Admin Moderation.
 
 ---
 
@@ -70,33 +69,32 @@
 
 ### 2.1 Core Features
 
-- **Continuous Audio Playback:** Seamless playback bar that persists across routing changes without stutter or audio re-buffering.
-- **Advanced Queue & Playback Modes:** Supports track queues, shuffle mode, repeat-one, repeat-all, and next-up scheduling.
-- **Synchronized Lyrics Display:** Interactive full-screen or side-panel view showing timed song lyrics with auto-scroll.
-- **Adaptive Artwork Theming:** Dynamically extracts dominant palette colors from album art to render vibrant atmospheric background gradients.
-- **Media Session API Integration:** Native operating system media controls (lock screen controls, hardware media keys, track notifications).
+- **Continuous Audio Playback:** Sticky global player bar that remains active across all routing changes with zero stutter or buffer loss.
+- **Queue & Playback Modes:** Supports dynamic queue management, track scrubbing, volume control, shuffle, repeat-all, and repeat-single.
+- **Synchronized Lyrics Viewer:** Real-time synchronized lyrics highlighting the active singing line with smooth auto-scrolling.
+- **Dynamic Artwork Palette Extraction:** Automatically calculates dominant colors from album covers to tint the top banner and backdrop.
+- **Media Session Integration:** Native OS integration supporting lock-screen controls, notification thumbnails, and keyboard hardware media keys.
 
 ### 2.2 User Features
 
-- **Authentication & Profiles:** User registration, credential login, automatic session revival, and profile customisation.
-- **Personalized Music Feed:** Recommended tracks, latest releases, top popular hits, and genre-based categorisation.
-- **Playlist Management:** Create public/private playlists, update titles and descriptions, add/remove songs with instant UI feedback.
-- **Favorites & Follows:** Quick heart toggle for songs and follow/unfollow functionality for favorite artists.
-- **Playback History:** Automatically logs recently played tracks with timestamps for fast resume.
+- **Authentication & Authorization:** Credential login, registration with Zod schema validation, and automatic session revival on browser reload.
+- **Personalized Music Discovery:** Home feeds displaying popular hits, new releases, personalized recommendations, and artist discographies.
+- **Custom Playlists:** Create playlists, edit titles and descriptions, add/remove songs with optimistic UI updates.
+- **Favorites & Follows:** One-click heart toggle for songs and follow/unfollow functionality for artist profiles.
+- **Recently Played History:** Automatically captures played tracks and provides quick-resume listings.
 
-### 2.3 Administrative Features
+### 2.3 Administrative & Creator Features
 
-- **Artist Application Workflow:** Standard users can submit artist portfolios (stage name, biography, avatar) for review.
-- **Artist Workspace:** Approved artists can manage their discography, create albums, and upload new songs with audio files and lyrics.
-- **Content Moderation:** Platform administrators can review pending song uploads, inspect lyrics, approve or reject submissions with reason notes.
-- **Artist Verification System:** Review artist requests with one-click approval or rejection.
+- **Artist Application Portal:** Allows listeners to apply for verified artist status by submitting a bio, stage name, and portfolio image.
+- **Artist Workspace:** Approved artists can upload MP3 audio files, cover artwork, and lyrics, and organize songs into albums.
+- **Admin Moderation Console:** Review pending artist applications and inspect submitted audio tracks with one-click approval or rejection.
 
 ### 2.4 Additional Features
 
-- **Instant Search:** Debounced multi-entity search querying songs, artists, and albums simultaneously with query history caching.
-- **Keyboard Shortcuts:** Spacebar play/pause, arrow keys for track scrubbing and volume adjustments.
-- **Context Menus:** Right-click song items to add to queue, append to existing playlists, or view artist details.
-- **Responsive Navigation:** Collapsible desktop sidebar, top app bar with breadcrumbs and history navigation, and mobile bottom bar.
+- **Debounced Instant Search:** Multi-entity query engine searching songs, artists, and albums simultaneously with query history caching.
+- **Keyboard Shortcuts:** Spacebar play/pause, arrow keys for track scrubbing, and volume adjustment shortcuts.
+- **Song Context Menus:** Right-click context menus for quick actions (Add to Queue, Add to Playlist, Go to Artist).
+- **Responsive Layout:** Adaptive sidebar for desktop, top bar with breadcrumb history, and bottom tab bar on mobile screens.
 
 ---
 
@@ -104,7 +102,7 @@
 
 ### 3.1 Home Page
 
-```
+```text
 +------------------------------------------------------------------------------------+
 |  [Sidebar]       |  [TopBar: Search, Navigation, Profile]                         |
 |  - Home          +-----------------------------------------------------------------+
@@ -120,22 +118,34 @@
 
 _Rich atmospheric home screen with adaptive background gradients and personalized cards._
 
-### 3.2 Main Features
+### 3.2 Main Features (Player & Synchronized Lyrics)
 
-- **Interactive Player & Expanded Lyrics:** Full viewport player with synchronized lyrics and animated canvas gradient backdrops.
-- **Dynamic Search & Filtering:** Instant filter chips for All, Songs, Artists, and Albums with debounce.
-- **Playlist Detail:** Sticky header with play-all button, duration calculations, track listing, and drag-to-reorder.
+```text
++------------------------------------------------------------------------------------+
+|  [Expanded Player / Lyrics View]                                                  |
+|                                                                                    |
+|       [Album Artwork]             Line 1: In the quiet of the morning...          |
+|                                 > Line 2: The melody begins to rise... < (Active)  |
+|                                   Line 3: Carrying memories of yesterday...        |
+|                                   Line 4: Through the open window...               |
+|                                                                                    |
++------------------------------------------------------------------------------------+
+|  [PlayerBar: Song Title | 01:24 ━━━●──────────── 03:45 | Shuffle / Repeat / Volume]|
++------------------------------------------------------------------------------------+
+```
+
+_Synchronized lyrics viewer with auto-scroll and full-screen theater backdrop._
 
 ### 3.3 Administrative Interface
 
-- **Artist Studio:** Dashboard for uploading MP3 audio, uploading cover art, editing synchronized lyrics, and organizing tracks into albums.
-- **Admin Review Console:** Dedicated view for moderators to inspect submitted audio files, review user artist applications, and approve songs for public catalog publication.
+- **Artist Studio:** Manage track uploads, upload audio files, and edit lyrics.
+- **Admin Review Console:** Dedicated view to approve or reject pending artist applications and song uploads.
 
 ### 3.4 Responsive Design
 
-- **Desktop (1024px+):** Three-column layout with fixed sidebar, dynamic content viewport, and optional right-hand queue/lyrics drawer.
-- **Tablet (768px - 1023px):** Compact sidebar with icon shortcuts and collapsible track list tables.
-- **Mobile (< 768px):** Bottom navigation dock, full-screen expandable mini-player drawer, and touch-optimized swipe controls.
+- **Desktop (1024px+):** Three-column layout with sidebar, main viewport, and collapsible queue/lyrics drawer.
+- **Tablet (768px - 1023px):** Compact sidebar with icon shortcuts and responsive track tables.
+- **Mobile (< 768px):** Bottom navigation dock, full-screen expandable mini-player drawer, and touch-optimized controls.
 
 ---
 
@@ -143,164 +153,143 @@ _Rich atmospheric home screen with adaptive background gradients and personalize
 
 ### 4.1 Architecture Overview
 
-The system follows a decoupled Single Page Application (SPA) + RESTful API architecture:
+The frontend is architected as a modular, feature-driven Single Page Application (SPA):
 
 ```
 +-------------------------------------------------------------------------+
-|                              CLIENT TIER                                |
-|   React 19 SPA (Vite) + Tailwind CSS + Zustand + TanStack Query         |
+|                               UI LAYER                                  |
+|         Pages / AppShell / Dynamic Backdrop / Modals / PlayerBar        |
++------------------------------------+------------------------------------+
+                                     |
+                                     v
++-------------------------------------------------------------------------+
+|                        APPLICATION STATE LAYER                          |
+|   Zustand (Player & Auth Stores)  |  TanStack Query (Server Cache)      |
++------------------------------------+------------------------------------+
+                                     |
+                                     v
++-------------------------------------------------------------------------+
+|                       NETWORK & DATA ACCESS LAYER                       |
+|       Axios Client | Silent Refresh Queue | Normalized API Errors       |
 +------------------------------------+------------------------------------+
                                      |
                                      | HTTPS / JSON / Cookies
                                      v
 +-------------------------------------------------------------------------+
-|                              SERVER TIER                                |
-|   Spring Boot 3 REST API (Spring Security, JPA, Flyway, Redis)          |
-+------------------+------------------------------+-----------------------+
-                   |                              |
-                   v                              v
-+------------------------------------+  +---------------------------------+
-|           DATABASE TIER            |  |         STORAGE / CDN           |
-|      PostgreSQL 16 (Relational)    |  |     Cloudinary / MinIO (S3)     |
-|   Redis (Cache & Refresh Tokens)   |  |   (MP3 Audio & Image Assets)    |
-+------------------------------------+  +---------------------------------+
+|                     BACKEND REST API & CDN MEDIA                        |
+|        Spring Boot 3 REST API      |       Cloudinary Audio CDN         |
++------------------------------------+------------------------------------+
 ```
 
 ### 4.2 Main Components
 
-- **Frontend Client (Vite + React):** Handles presentation, routing, optimistic mutations, audio rendering via Web Audio / HTML5 Audio APIs, and cached global state.
-- **Backend API (Spring Boot 3):** Encapsulates core business logic, permissions enforcement, token issuance, and metadata persistence following Clean Architecture principles.
-- **Persistence Layer (PostgreSQL):** Stores relational data including users, roles, songs, albums, playlists, track orders, and audit logs.
-- **Cache Layer (Redis):** Caches frequent queries (popular tracks, catalog listings) and supports session tracking.
-- **Media Storage (Cloudinary / S3 / Static):** High-speed content delivery network for binary streaming assets (audio files, album cover artwork, artist avatars).
+- **Player Engine (`features/player`):** Custom HTML5 Audio manager handling audio buffer events, time updates, error recovery, and MediaSession OS metadata.
+- **Auth Store (`features/auth`):** Zustand store maintaining user session, authentication status, and token lifecycle.
+- **Server Cache (`lib/query-client`):** TanStack Query coordinating queries, automatic invalidation scopes, and optimistic cache mutations.
+- **API Client (`lib/api`):** Central Axios instance with interceptors for attaching Bearer tokens and orchestrating concurrency-safe silent token refreshes via HttpOnly cookies.
 
 ### 4.3 Request Flow
 
-1. **Authentication Flow:** User logs in via `/api/auth/login`. Server returns a short-lived access token in the response payload and sets a secure HttpOnly refresh token cookie.
-2. **Protected Resource Request:** Client attaches `Authorization: Bearer <token>` in headers. If expired, client's Axios interceptor automatically requests `/api/auth/refresh` silently and retries the original request.
-3. **Media Streaming:** Client fetches song metadata (stream URL). The browser's native audio element streams the binary audio directly from the CDN with Range header support for seeking.
-4. **Mutations (e.g. Liked Songs, Playlists):** TanStack Query performs optimistic updates on the client UI while dispatching POST/PUT/DELETE requests to the backend.
+1. **API Requests:** Application queries trigger requests via Axios through `/api/**`.
+2. **Local Development Proxy:** Vite forwards `/api` requests to the local Spring Boot backend running on `http://127.0.0.1:8000`.
+3. **Token Interception:** If a 401 error occurs, the refresh manager queues pending calls, requests `/api/auth/refresh` silently, updates the token, and replays all original requests.
+4. **Media Streaming:** Song playback streams MP3 files directly from Cloudinary CDN URLs with HTTP Range request support for instant seeking.
 
 ### 4.4 Design Principles
 
-- **Separation of Concerns:** Frontend views are decoupled from data fetching and audio management via custom hooks and dedicated Zustand stores.
-- **Domain-Driven & Feature-Sliced Architecture:** Frontend code is structured by domain feature (`features/player`, `features/auth`, `features/workspace`) rather than flat technical categories.
-- **Resilient Offline & Error Recovery:** Integrated error boundaries, automatic query retry strategies, and visual fallback toasts.
-- **Stateless Application Servers:** Backend nodes retain no session memory; authorization is strictly cryptographically verified via JWT.
+- **Feature-Sliced Organization:** Logic is grouped by domain features (`features/player`, `features/playlists`, `features/workspace`) rather than generic technical roles.
+- **Decoupled Business Logic:** UI components consume custom hooks; API calls and data mappers are isolated from rendering components.
+- **Optimistic Updates:** Library actions (likes, playlist updates) reflect immediately in the UI before network requests complete.
+- **Design Token System:** Global CSS custom properties (`styles/tokens.css`) power consistent typography, colors, and dark mode styling.
 
 ---
 
 ## 5. Tech Stack
 
-### 5.1 Frontend
+### 5.1 Frontend Core
 
-| Technology                                                                | Purpose                                                         |
-| ------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| [React 19](https://react.dev/)                                            | Component-based User Interface library                          |
-| [TypeScript 5/6](https://www.typescriptlang.org/)                         | Static type safety and developer ergonomics                     |
-| [Vite 8](https://vitejs.dev/)                                             | Next-generation frontend build tool and dev server              |
-| [Tailwind CSS v4](https://tailwindcss.com/)                               | Utility-first styling engine and custom design tokens           |
-| [TanStack Query v5](https://tanstack.com/query)                           | Server state synchronization, caching, and optimistic mutations |
-| [Zustand](https://zustand-demo.pmnd.rs/)                                  | Lightweight global state management for Player and Auth         |
-| [React Router v7](https://reactrouter.com/)                               | Client-side routing, protected routes, and layouts              |
-| [Framer Motion](https://www.framer.com/motion/)                           | UI micro-interactions, spring animations, and transitions       |
-| [Lucide React](https://lucide.dev/)                                       | Consistent, clean icon collection                               |
-| [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/) | Form management and runtime schema validation                   |
+| Technology                                    | Version   | Purpose                                                   |
+| --------------------------------------------- | --------- | --------------------------------------------------------- |
+| [React](https://react.dev/)                   | 19.x      | Component-based User Interface library                    |
+| [TypeScript](https://www.typescriptlang.org/) | 5.x / 6.x | Static typing and compile-time error detection            |
+| [Vite](https://vitejs.dev/)                   | 8.x       | High-speed frontend build tool and dev server             |
+| [Tailwind CSS](https://tailwindcss.com/)      | v4        | Utility-first styling engine and design token integration |
+| [React Router](https://reactrouter.com/)      | v7        | Declarative client-side routing and protected routes      |
 
-### 5.2 Backend
+### 5.2 State Management & Networking
 
-| Technology                                                                | Purpose                                                 |
-| ------------------------------------------------------------------------- | ------------------------------------------------------- |
-| [Spring Boot 3.5](https://spring.io/projects/spring-boot)                 | Core enterprise backend framework                       |
-| [Spring Security 6](https://spring.io/projects/spring-security)           | RBAC security, JWT verification, and CORS configuration |
-| [Spring Data JPA / Hibernate](https://spring.io/projects/spring-data-jpa) | Relational Object-Relational Mapping and repositories   |
-| [Flyway](https://flywaydb.org/)                                           | Automated database migration version control            |
-| [Lombok](https://projectlombok.org/)                                      | Java boilerplate reduction (getters, setters, builders) |
-| [Springdoc OpenAPI](https://springdoc.org/)                               | Automated Swagger UI and OpenAPI 3.0 documentation      |
+| Technology                                   | Version | Purpose                                                      |
+| -------------------------------------------- | ------- | ------------------------------------------------------------ |
+| [TanStack Query](https://tanstack.com/query) | v5      | Asynchronous server state caching, pagination, and mutations |
+| [Zustand](https://zustand-demo.pmnd.rs/)     | v5      | Lightweight global state for Player and Auth sessions        |
+| [Axios](https://axios-http.com/)             | 1.x     | HTTP client with automatic silent refresh interceptors       |
 
-### 5.3 Database and Storage
+### 5.3 UI & Animation
 
-| Technology                                         | Purpose                                            |
-| -------------------------------------------------- | -------------------------------------------------- |
-| [PostgreSQL 16](https://www.postgresql.org/)       | Primary relational database storage                |
-| [Redis](https://redis.io/)                         | Distributed in-memory cache and session management |
-| [Cloudinary / S3 / MinIO](https://cloudinary.com/) | Cloud storage and CDN for audio and image assets   |
+| Technology                                                                | Purpose                                                |
+| ------------------------------------------------------------------------- | ------------------------------------------------------ |
+| [Framer Motion](https://www.framer.com/motion/)                           | Smooth spring physics animations and modal transitions |
+| [Lucide React](https://lucide.dev/)                                       | Consistent, lightweight SVG icon collection            |
+| [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/) | Form handling and runtime validation schemas           |
 
-### 5.4 Development and Deployment Tools
+### 5.4 Testing & Quality Tools
 
-| Technology                                                                      | Purpose                                                            |
-| ------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| [Git](https://git-scm.com/)                                                     | Distributed version control                                        |
-| [Docker & Compose](https://www.docker.com/)                                     | Multi-service local virtualization and production containerization |
-| [Vitest](https://vitest.dev/) & [Testing Library](https://testing-library.com/) | Unit and component test runner                                     |
-| [Playwright](https://playwright.dev/)                                           | End-to-end and accessibility testing                               |
-| [Oxlint & ESLint](https://oxc.rs/)                                              | High-speed JavaScript/TypeScript linting                           |
-| [Nginx](https://nginx.org/)                                                     | Reverse proxy and production static asset web server               |
+| Technology                                                                      | Purpose                                                 |
+| ------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| [Vitest](https://vitest.dev/) & [Testing Library](https://testing-library.com/) | Unit and component testing framework                    |
+| [Playwright](https://playwright.dev/)                                           | End-to-end browser testing and accessibility compliance |
+| [Oxlint](https://oxc.rs/) & [ESLint](https://eslint.org/)                       | High-speed code quality and linting verification        |
+| [Prettier](https://prettier.io/)                                                | Automated code formatting                               |
 
 ---
 
 ## 6. Project Structure
 
 ```text
-spotify-clone/
-├── spotify_clone_front/                # Frontend application (React 19 + Vite)
-│   ├── .github/workflows/              # GitHub Actions CI/CD pipelines
-│   ├── docs/                           # Architecture, API contracts, phase specs
-│   ├── e2e/                            # Playwright end-to-end tests
-│   ├── public/                         # Static assets (favicons, icons)
-│   ├── scripts/                        # Bundle analysis & maintenance scripts
-│   ├── src/
-│   │   ├── app/                        # App shell, routing, global providers
-│   │   ├── components/                 # Shared UI components (Button, Modal, Input)
-│   │   ├── features/                   # Feature slices (player, auth, playlists, workspace)
-│   │   │   ├── albums/                 # Album components, queries, types
-│   │   │   ├── artists/                # Artist profiles and discography
-│   │   │   ├── auth/                   # Login/register forms, auth guards, store
-│   │   │   ├── catalog/                # Discovery sections and listings
-│   │   │   ├── favorites/              # Liked songs toggling & collection
-│   │   │   ├── history/                # Recently played tracking & views
-│   │   │   ├── library/                # User library and follow management
-│   │   │   ├── player/                 # Audio engine, queue, lyrics, controls
-│   │   │   ├── playlists/              # Playlist CRUD, track management
-│   │   │   ├── search/                 # Multi-entity debounced search
-│   │   │   ├── songs/                  # Track rows, card lists, detail views
-│   │   │   └── workspace/              # Artist upload studio & Admin moderation
-│   │   ├── hooks/                      # Custom hooks (artwork color, window title)
-│   │   ├── lib/                        # Axios instance, error normalization, query client
-│   │   ├── pages/                      # Page route containers
-│   │   ├── styles/                     # Global styles, token palette, Tailwind CSS
-│   │   └── types/                      # Shared data contracts
-│   ├── .env.example                    # Environment variable template
-│   ├── Dockerfile                      # Production multi-stage Docker build
-│   ├── nginx.conf                      # Nginx SPA routing and caching configuration
-│   ├── package.json                    # Project dependencies and npm scripts
-│   ├── vite.config.ts                  # Vite build and proxy settings
-│   └── README.md                       # Frontend documentation
-│
-└── spotify_clone_back/                 # Backend application (Spring Boot 3)
-    ├── src/main/java/com/spotify/      # Clean architecture implementation
-    │   ├── domain/                     # Core domain entities and value objects
-    │   ├── application/                # Application use cases and service interfaces
-    │   ├── infrastructure/             # JPA entities, repos, security, cloud storage
-    │   └── presentation/               # REST controllers, request/response DTOs
-    ├── src/main/resources/
-    │   ├── db/migration/               # Flyway SQL migration scripts
-    │   └── application.yml             # Spring profile configurations
-    ├── pom.xml                         # Maven build descriptors and dependencies
-    └── Dockerfile                      # Backend container configuration
+spotify_clone_front/
+├── .github/workflows/          # GitHub Actions CI/CD workflows
+├── e2e/                        # Playwright end-to-end tests
+├── public/                     # Static public assets (icons, favicons)
+├── scripts/                    # Bundle analysis & maintenance scripts
+├── src/
+│   ├── app/                    # Application shell, router, providers
+│   │   ├── config/             # Environment configuration parser
+│   │   ├── App.tsx             # Root component
+│   │   ├── providers.tsx       # QueryClient and Toast providers
+│   │   └── router.tsx          # Route definitions & guards
+│   ├── components/             # Reusable UI components
+│   │   ├── layout/             # AppShell, Sidebar, TopBar, MobileNav
+│   │   ├── shared/             # MusicCard, SongRow, Artwork, DynamicBackdrop
+│   │   └── ui/                 # Button, Input, Modal, Avatar, Badge, Toast
+│   ├── features/               # Feature-sliced domain modules
+│   │   ├── albums/             # Album detail, hooks, queries, DTOs
+│   │   ├── artists/            # Artist discography, hooks, queries
+│   │   ├── auth/               # Login/Register forms, auth store, guards
+│   │   ├── catalog/            # Catalog sections, recommendations
+│   │   ├── favorites/          # Liked songs hook and mutation toggles
+│   │   ├── history/            # Playback tracking & recently played
+│   │   ├── library/            # User library & followed artists
+│   │   ├── player/             # Audio engine, queue, lyrics, controls
+│   │   ├── playlists/          # Playlist CRUD dialogs and hooks
+│   │   ├── search/             # Debounced multi-entity search
+│   │   ├── songs/              # Song cards, lists, detail views
+│   │   └── workspace/          # Artist upload studio & Admin moderation
+│   ├── hooks/                  # Custom React hooks (artwork color, online status)
+│   ├── lib/                    # Core utilities (Axios client, refresh queue, cn)
+│   ├── pages/                  # Page route containers
+│   ├── styles/                 # Tailwind CSS tokens and global styles
+│   ├── test/                   # Test setup and MSW mock configurations
+│   ├── types/                  # Shared data models and contracts
+│   ├── main.tsx                # Client entry point
+│   └── vite-env.d.ts           # Vite type declarations
+├── Dockerfile                  # Multi-stage production container build
+├── nginx.conf                  # Production Nginx reverse proxy configuration
+├── package.json                # Project dependencies and scripts
+├── tsconfig.json               # TypeScript configuration
+├── vercel.json                 # Vercel deployment routing configuration
+├── vite.config.ts              # Vite configuration and dev proxy settings
+└── README.md                   # Project documentation
 ```
-
-### Directory Description
-
-| Directory/File                                | Description                                                                |
-| --------------------------------------------- | -------------------------------------------------------------------------- |
-| `spotify_clone_front/`                        | Complete React 19 Single Page Application                                  |
-| `spotify_clone_front/src/features/`           | Domain-driven feature slices isolating API, components, and state          |
-| `spotify_clone_front/src/features/player/`    | Custom HTML5 audio engine, lyrics parser, and queue store                  |
-| `spotify_clone_front/src/features/workspace/` | Artist content creation studio and Administrator approval portal           |
-| `spotify_clone_front/docs/`                   | Technical specifications, phase progress reports, and API contracts        |
-| `spotify_clone_back/`                         | Spring Boot 3 enterprise application and business logic                    |
-| `docker-compose.yml`                          | Multi-container configuration for PostgreSQL, Redis, Backend, and Frontend |
 
 ---
 
@@ -308,15 +297,12 @@ spotify-clone/
 
 ### 7.1 Prerequisites
 
-Ensure you have the following installed locally:
+Ensure you have the following installed on your local development machine:
 
 - **Node.js:** `v20.x` or `v22.x LTS`
 - **npm:** `v10.x+` (or `pnpm` / `yarn`)
-- **Java Development Kit (JDK):** `JDK 21 LTS`
-- **Maven:** `3.9+` (or use bundled `./mvnw`)
-- **PostgreSQL:** `15+` or `16`
-- **Redis:** `7.x+` (optional for caching)
 - **Git**
+- **Backend Service:** Running instance of [Spotify Clone Backend](https://github.com/Minhhau32223/spotify_clone_back) at `http://localhost:8000` (optional if using mock data).
 
 ### 7.2 Clone the Repository
 
@@ -325,94 +311,51 @@ git clone https://github.com/Minhhau32223/music_front.git
 cd music_front
 ```
 
-_(To run the full stack, also clone the backend alongside in `spotify_clone_back`):_
-
-```bash
-git clone https://github.com/Minhhau32223/spotify_clone_back.git
-```
-
 ### 7.3 Configure Environment Variables
 
-#### Frontend Configuration
-
-Create a `.env` or `.env.local` file inside the frontend folder:
-
-```bash
-cp .env.example .env.local
-```
-
-On Windows PowerShell:
-
-```powershell
-Copy-Item .env.example .env.local
-```
-
-Ensure the variables match your backend server port:
+Create a local environment file `.env.local` in the project root:
 
 ```env
+# .env.local
 VITE_API_URL=/api
 VITE_DEV_API_PROXY_TARGET=http://127.0.0.1:8000
 ```
 
+> **Note:** During local development (`npm run dev`), Vite proxies all `/api` requests to `VITE_DEV_API_PROXY_TARGET` to prevent CORS issues.
+
 ### 7.4 Install Dependencies
 
-#### Frontend
-
 ```bash
-cd spotify_clone_front
 npm install
 ```
 
-#### Backend
+### 7.5 Run the Development Server
 
 ```bash
-cd spotify_clone_back
-./mvnw clean install -DskipTests
-```
-
-_(On Windows PowerShell: `.\mvnw.cmd clean install -DskipTests`)_
-
-### 7.5 Database Setup
-
-1. Start your local PostgreSQL instance and create the target database:
-   ```sql
-   CREATE DATABASE spotify_clone;
-   ```
-2. Verify credentials in `spotify_clone_back/src/main/resources/application.yml` or export them as environment variables:
-   ```bash
-   export SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/spotify_clone
-   export SPRING_DATASOURCE_USERNAME=postgres
-   export SPRING_DATASOURCE_PASSWORD=your_password
-   ```
-3. Flyway will automatically execute database migrations on backend startup.
-
-### 7.6 Run the Application
-
-#### Start the Backend
-
-```bash
-cd spotify_clone_back
-./mvnw spring-boot:run
-```
-
-_(Backend starts at `http://localhost:8000`)_
-
-#### Start the Frontend
-
-```bash
-cd spotify_clone_front
 npm run dev
 ```
 
-_(Frontend starts at `http://localhost:5173`)_
+The application will start at `http://localhost:5173`.
+
+### 7.6 Build for Production
+
+```bash
+npm run build
+```
+
+To preview the production build locally:
+
+```bash
+npm run preview
+```
 
 ### 7.7 Verify the Installation
 
-1. Open your browser and navigate to `http://localhost:5173`.
-2. Browse public songs on the **Home Page**.
-3. Click any track card to verify that the **Audio Player** starts playing and the waveform/progress bar activates.
-4. Register a new user account at `/register` and log in to test user-specific features (Likes, Playlists).
-5. Visit `http://localhost:8000/swagger-ui.html` to explore the interactive backend API documentation.
+1. Navigate to `http://localhost:5173` in your browser.
+2. Verify that song cards render on the Home page.
+3. Click any track card to verify that the **Player Bar** appears and begins playing audio.
+4. Click the lyrics icon to toggle the **Synchronized Lyrics** panel.
+5. Register a new account at `/register` to test authentication and library features.
 
 ---
 
@@ -420,113 +363,66 @@ _(Frontend starts at `http://localhost:5173`)_
 
 ### 8.1 Configuration Reference
 
-#### Frontend (`spotify_clone_front`)
+| Variable                    | Description                                                                                                                                    | Required | Default / Example                                               |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | -------- | --------------------------------------------------------------- |
+| `VITE_API_URL`              | Base API URL. In local development, use `/api` to leverage the Vite proxy. In production (e.g. Vercel), set to the absolute backend HTTPS URL. | Yes      | `/api` _(Local)_ <br> `https://api.yourdomain.com/api` _(Prod)_ |
+| `VITE_DEV_API_PROXY_TARGET` | Target backend URL forwarded by the local Vite dev proxy server.                                                                               | Dev Only | `http://127.0.0.1:8000`                                         |
 
-| Variable                    | Description                                                                           | Required | Example                 |
-| --------------------------- | ------------------------------------------------------------------------------------- | -------- | ----------------------- |
-| `VITE_API_URL`              | Base API route (use `/api` in local dev with proxy; absolute HTTPS URL in production) | Yes      | `/api`                  |
-| `VITE_DEV_API_PROXY_TARGET` | Target backend URL forwarded by the local Vite dev proxy server                       | Dev Only | `http://127.0.0.1:8000` |
+### 8.2 Security & Build Verification
 
-#### Backend (`spotify_clone_back`)
-
-| Variable                     | Description                                          | Required | Example                                                |
-| ---------------------------- | ---------------------------------------------------- | -------- | ------------------------------------------------------ |
-| `SPRING_DATASOURCE_URL`      | PostgreSQL JDBC connection URL                       | Yes      | `jdbc:postgresql://localhost:5432/spotify_clone`       |
-| `SPRING_DATASOURCE_USERNAME` | Database username                                    | Yes      | `postgres`                                             |
-| `SPRING_DATASOURCE_PASSWORD` | Database password                                    | Yes      | `secret`                                               |
-| `JWT_SECRET`                 | Secret key for signing and verifying JSON Web Tokens | Yes      | `verySecureLongRandomSecretKeyForJwtSigning2026`       |
-| `CORS_ALLOWED_ORIGINS`       | Permitted frontend origins for CORS                  | Yes      | `http://localhost:5173,https://your-domain.vercel.app` |
-| `CLOUDINARY_URL`             | Media storage cloud configuration URI                | Optional | `cloudinary://<api_key>:<api_secret>@<cloud_name>`     |
-
-### 8.2 Security Notes
-
-- **Never Commit Secrets:** Do not commit actual `.env`, `.env.local`, or configuration files containing passwords or JWT secrets to Git.
-- **Strict Production Verification:** The Vite production build automatically aborts on Vercel if `VITE_API_URL` is pointing to `localhost` or uses unencrypted `http://`.
-- **HttpOnly Cookies:** Refresh tokens are transmitted exclusively inside `HttpOnly; SameSite=Strict` (or `None` with `Secure` in cross-site prod) cookies to prevent XSS credential exfiltration.
-- **Credential Rotation:** Rotate production JWT signing keys immediately if any leak occurs.
+- **No Secrets in Frontend:** The frontend is a client-side Single Page Application; never place private API secrets or private encryption keys in `VITE_` variables.
+- **Strict Vercel Build Gate:** The Vite build configuration automatically fails if deployed to production with `VITE_API_URL` set to `localhost`, `127.0.0.1`, or unencrypted `http://`. Production deployments must target an absolute HTTPS URL ending in `/api`.
+- **Environment Isolation:** Do not commit `.env` or `.env.local` files to Git. The `.gitignore` file is configured to exclude all environment files.
 
 ---
 
-## 9. API Documentation
+## 9. API Documentation & Integration
 
 ### 9.1 API Overview
 
-- **Base URL:** `http://localhost:8000/api` (Local) / `https://api.yourdomain.com/api` (Production)
-- **API Specification:** OpenAPI 3.0 via Swagger UI (`/swagger-ui.html`)
-- **Authentication Scheme:** `Bearer <JWT_ACCESS_TOKEN>` in `Authorization` header
-- **Standard Response Envelope:** JSON payloads; pagination follows `{ content: [], totalElements, totalPages, number, size }`
-- **Error Conventions:** Standard format `{ timestamp, status, error, message, path }`
+- **Base URL:** `/api` (local proxy) or `https://<backend-domain>/api` (production)
+- **Response Format:** JSON
+- **Authentication:** `Authorization: Bearer <access_token>` header
+- **Session Refresh:** Handled automatically via `withCredentials: true` using a secure `HttpOnly` refresh token cookie.
 
-### 9.2 API Endpoints
+### 9.2 API Endpoints Consumed by Frontend
 
-| Method | Endpoint                       | Description                                           | Authentication |
-| ------ | ------------------------------ | ----------------------------------------------------- | -------------- |
-| `POST` | `/api/auth/register`           | Register a new user                                   | Public         |
-| `POST` | `/api/auth/login`              | Authenticate credentials and receive access token     | Public         |
-| `POST` | `/api/auth/refresh`            | Silently exchange refresh cookie for new access token | Refresh Cookie |
-| `POST` | `/api/auth/logout`             | Invalidate current session and clear cookies          | Bearer Token   |
-| `GET`  | `/api/users/me`                | Fetch authenticated user profile details              | Bearer Token   |
-| `GET`  | `/api/songs`                   | Paginated song catalog with filtering and sorting     | Public         |
-| `GET`  | `/api/songs/{id}`              | Retrieve individual song metadata and lyrics          | Public         |
-| `GET`  | `/api/albums`                  | List published albums with pagination                 | Public         |
-| `GET`  | `/api/albums/{id}`             | Retrieve album details and track list                 | Public         |
-| `GET`  | `/api/artists`                 | Browse public artist profiles                         | Public         |
-| `GET`  | `/api/artists/{id}`            | Get artist biography, discography, and top tracks     | Public         |
-| `GET`  | `/api/search`                  | Search across songs, artists, and albums              | Public         |
-| `GET`  | `/api/favorites/me`            | Retrieve current user's liked tracks                  | User           |
-| `POST` | `/api/favorites/{songId}`      | Heart / unheart a song                                | User           |
-| `GET`  | `/api/playlists/me`            | List playlists owned or followed by current user      | User           |
-| `POST` | `/api/playlists`               | Create a new custom playlist                          | User           |
-| `POST` | `/api/playlists/{id}/songs`    | Add a track to an existing playlist                   | User           |
-| `GET`  | `/api/recently-played/me`      | Fetch playback history for current user               | User           |
-| `POST` | `/api/artist-applications`     | Submit application to become an artist                | User           |
-| `POST` | `/api/artist/songs`            | Upload new song track (Multipart audio + metadata)    | Artist         |
-| `GET`  | `/api/admin/applications`      | Review pending artist verification requests           | Admin          |
-| `PUT`  | `/api/admin/applications/{id}` | Approve or reject artist application                  | Admin          |
+| Feature       | Method | Endpoint                   | Description                            |
+| ------------- | ------ | -------------------------- | -------------------------------------- |
+| **Auth**      | `POST` | `/api/auth/login`          | Authenticate user credentials          |
+| **Auth**      | `POST` | `/api/auth/register`       | Register a new account                 |
+| **Auth**      | `POST` | `/api/auth/refresh`        | Silently issue fresh access token      |
+| **Auth**      | `POST` | `/api/auth/logout`         | Invalidate session                     |
+| **Catalog**   | `GET`  | `/api/songs`               | Fetch paginated songs with filters     |
+| **Catalog**   | `GET`  | `/api/songs/{id}`          | Fetch song metadata and lyrics         |
+| **Catalog**   | `GET`  | `/api/albums/{id}`         | Fetch album details and track list     |
+| **Catalog**   | `GET`  | `/api/artists/{id}`        | Fetch artist biography and discography |
+| **Search**    | `GET`  | `/api/search`              | Multi-entity debounced search          |
+| **Favorites** | `GET`  | `/api/favorites/me`        | Fetch user liked songs                 |
+| **Favorites** | `POST` | `/api/favorites/{songId}`  | Heart / unheart a track                |
+| **Playlists** | `GET`  | `/api/playlists/me`        | List user playlists                    |
+| **Playlists** | `POST` | `/api/playlists`           | Create custom playlist                 |
+| **History**   | `GET`  | `/api/recently-played/me`  | Fetch recently played tracks           |
+| **Workspace** | `POST` | `/api/artist-applications` | Submit artist application              |
+| **Workspace** | `POST` | `/api/artist/songs`        | Upload new song with audio & lyrics    |
+| **Admin**     | `GET`  | `/api/admin/applications`  | Review artist applications             |
 
-### 9.3 Authentication and Authorization
+### 9.3 Authentication Lifecycle
 
-- **User Roles:**
-  - `USER`: Default role. Can stream songs, manage favorites, build playlists, follow artists, and apply for Artist status.
-  - `ARTIST`: Includes all User permissions plus access to Artist Workspace for song upload and discography management.
-  - `ADMIN`: Full access to Admin Console for moderating song submissions, verifying artist profiles, and platform management.
-- **Token Lifecycle:** Access tokens expire every 15 minutes. The frontend Axios interceptor transparently refreshes expired tokens via the secure HttpOnly cookie without user interruption.
-
-### 9.4 Request and Response Examples
-
-#### Login Request
-
-```http
-POST /api/auth/login
-Content-Type: application/json
-
-{
-  "username": "musiclover",
-  "password": "Password123!"
-}
+```text
+[User Action] ──> API Call (Bearer Token)
+                     │
+              (401 Unauthorized?)
+              ├── No  ──> Render Data
+              └── Yes ──> Queue Request
+                            │
+                            v
+                  POST /api/auth/refresh (Cookie)
+                            │
+                     (Refresh Success?)
+                     ├── Yes ──> Update Token & Replay Queued Requests
+                     └── No  ──> Clear Session & Redirect to /login
 ```
-
-#### Successful Response (`200 OK`)
-
-```json
-{
-  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "tokenType": "Bearer",
-  "expiresIn": 900,
-  "user": {
-    "id": 42,
-    "username": "musiclover",
-    "email": "user@example.com",
-    "role": "USER",
-    "avatar": "https://res.cloudinary.com/demo/image/upload/avatar.jpg"
-  }
-}
-```
-
-### 9.5 API Testing Tools
-
-- **Swagger UI:** Directly access and run queries at `http://localhost:8000/swagger-ui.html`.
-- **Postman Collection:** Use Postman or Insomnia with environment variable `baseUrl = http://localhost:8000/api`.
 
 ---
 
@@ -534,63 +430,39 @@ Content-Type: application/json
 
 ### 10.1 Testing Strategy
 
-The repository follows the testing pyramid principle:
-
-- **Unit Testing:** Validates business logic, state reducers, time formatting, and utility helpers.
-- **Component Testing:** Validates UI behaviors and component rendering via React Testing Library and Vitest.
-- **Integration Testing:** Tests API client layers and interceptors using Mock Service Worker (MSW).
-- **End-to-End Testing:** Automates critical user journeys (Login, Playback, Search) via Playwright.
+- **Unit & Component Testing:** Tests individual UI components, formatters, and utility functions using Vitest and React Testing Library.
+- **Store & Hook Testing:** Validates Zustand player state transitions, queue shuffling algorithms, and authentication stores.
+- **Integration Testing:** Tests API client interceptors and error handling via Mock Service Worker (MSW).
+- **End-to-End Testing:** Automates critical user journeys (login, song playback, search) using Playwright.
 
 ### 10.2 Running Tests
 
-#### Frontend Unit & Component Tests
-
 ```bash
-cd spotify_clone_front
-
-# Run all unit tests with Vitest
-npm test
+# Run unit and component tests
+npm run test
 
 # Run tests in watch mode
 npm run test:watch
 
-# Run TypeScript typechecks
+# Run TypeScript type check
 npm run typecheck
 
 # Run linters
 npm run lint
-```
 
-#### Frontend End-to-End & Accessibility Tests
-
-```bash
-# Run Playwright E2E smoke suite
+# Run Playwright E2E smoke tests
 npm run test:e2e
 
 # Run accessibility compliance tests
 npm run test:a11y
 ```
 
-#### Backend Tests
-
-```bash
-cd spotify_clone_back
-
-# Execute JUnit unit & integration tests
-./mvnw test
-```
-
 ### 10.3 Test Coverage
 
-- **Authentication Guards:** Protected, guest, and role-based route guard validations.
-- **Audio Engine & Stores:** Queue ordering, shuffle algorithms, persistence, and playback state machines.
-- **API Interceptor:** Silent refresh queue handling and network error normalization.
-- **Form Schemas:** Login and registration input constraint validations.
-
-### 10.4 Known Issues
-
-- In simulated testing environments without hardware audio output, Web Audio API context may initialize in a suspended state until user interaction.
-- Playwright E2E tests require backend services or MSW mocks running concurrently.
+- Route guard access control (`ProtectedRoute`, `GuestRoute`, `RoleRoute`).
+- Audio playback engine, shuffle utilities, and queue mutations.
+- Silent token refresh queue and network error normalization.
+- Form validation schemas for login and registration.
 
 ---
 
@@ -599,74 +471,59 @@ cd spotify_clone_back
 ### 11.1 Deployment Architecture
 
 ```
-                       [Internet / Clients]
-                                |
-                                v
-               +----------------------------------+
-               |     Cloudflare / DNS / SSL       |
-               +----------------+-----------------+
-                                |
-        +-----------------------+-----------------------+
-        |                                               |
-        v                                               v
-+-------------------------------+               +-------------------------------+
-|       Frontend Hosting        |               |        Backend Hosting        |
-|     (Vercel / AWS Amplify)    |               |    (VPS / Docker / Render)    |
-|   Static React 19 Bundle      |               |     Spring Boot 3 REST API    |
-+---------------+---------------+               +---------------+---------------+
-                |                                               |
-                +-------------------> API Proxy <---------------+
-                                                                |
-                                        +-----------------------+-----------------------+
-                                        |                                               |
-                                        v                                               v
-                        +-------------------------------+               +-------------------------------+
-                        |        Database Service       |               |         Cloud Storage         |
-                        |     Managed PostgreSQL 16     |               |   Cloudinary / AWS S3 CDN     |
-                        +-------------------------------+               +-------------------------------+
+                       [Users / Clients]
+                               │
+                               ▼
+               +-------------------------------+
+               |    Cloudflare / Vercel Edge   |
+               +---------------+---------------+
+                               │
+                +--------------+--------------+
+                │                             │
+                ▼                             ▼
++-------------------------------+ +-------------------------------+
+|       Frontend (SPA)          | |        Backend API Node       |
+|    Vercel / Nginx Container   | |     Spring Boot REST API      |
++-------------------------------+ +---------------+---------------+
+                                                  │
+                                                  ▼
+                                  +-------------------------------+
+                                  |    Cloudinary / Media CDN     |
+                                  |      (MP3s & Artwork)         |
+                                  +-------------------------------+
 ```
 
-### 11.2 Deployment Prerequisites
+### 11.2 Deploying to Vercel
 
-- **Frontend:** Vercel account or VPS with Nginx.
-- **Backend:** Cloud VM (e.g. AWS EC2, DigitalOcean) or PaaS (Render, Railway).
-- **Database:** Managed PostgreSQL (e.g. Supabase, Neon, AWS RDS).
-- **Domain & SSL:** Custom domain with HTTPS configured.
-
-### 11.3 Deployment Steps
-
-#### Deploying Frontend to Vercel
-
-1. Import the `music_front` repository into Vercel.
-2. Select Framework Preset: **Vite**.
-3. Set Build Command: `npm run build`.
-4. Set Output Directory: `dist`.
-5. Add Environment Variable:
-   - `VITE_API_URL`: Set to your production backend URL (e.g. `https://api.yourdomain.com/api`).
-     _(Note: Must be an absolute HTTPS URL)._
+1. Import this repository into **Vercel**.
+2. Framework Preset: **Vite**.
+3. Build Command: `npm run build`.
+4. Output Directory: `dist`.
+5. Under **Settings → Environment Variables**, add:
+   - `VITE_API_URL`: `https://<your-backend-domain>/api`
+     _(Must be an absolute HTTPS URL)._
 6. Deploy the project.
-7. Update backend `CORS_ALLOWED_ORIGINS` to include the generated Vercel domain.
+7. Add the generated Vercel domain (e.g. `https://your-project.vercel.app`) to the backend `CORS_ALLOWED_ORIGINS`.
 
-#### Deploying Frontend with Docker & Nginx
+### 11.3 Deploying with Docker & Nginx
 
 ```bash
-cd spotify_clone_front
+# Build the production Docker image
 docker build -t spotify-clone-front .
+
+# Run the container on port 80
 docker run -d -p 80:80 --name spotify-front spotify-clone-front
 ```
 
+The bundled `nginx.conf` handles client-side SPA routing (`try_files $uri $uri/ /index.html`) and enables gzip compression for static assets.
+
 ### 11.4 CI/CD Pipeline
 
-The project includes automated GitHub Actions workflows located in `.github/workflows/`:
+The repository includes automated GitHub Actions workflows (`.github/workflows/frontend.yml`) running:
 
-- **Continuous Integration (`frontend.yml`):** Automatically triggers on pull requests to `main`, validating typechecks, running linters, and executing tests.
-- **Continuous Deployment:** Merges to `main` trigger automated builds and deployment to production hosting.
-
-### 11.5 Monitoring and Maintenance
-
-- **Health Checks:** Monitored via Spring Boot Actuator at `/actuator/health`.
-- **Application Logs:** Structured JSON log outputs for integration with Grafana / Loki / Datadog.
-- **Database Backups:** Automated daily PostgreSQL snapshots and backup retention.
+- Type checking (`npm run typecheck`)
+- Lint checks (`npm run lint`)
+- Automated test suites (`npm run test`)
 
 ---
 
@@ -674,39 +531,34 @@ The project includes automated GitHub Actions workflows located in `.github/work
 
 ### Completed
 
-- [x] Complete project initialization with React 19, Vite, and Tailwind CSS v4.
-- [x] Persistent continuous HTML5 audio playback bar with volume and seek controls.
-- [x] Audio queue management: next up, previous, shuffle mode, repeat modes.
-- [x] Synchronized lyrics viewer with animated auto-scroll.
-- [x] Adaptive album artwork background gradient extraction.
-- [x] User authentication with JWT and secure HttpOnly cookie refresh token rotation.
+- [x] Responsive layout with adaptive desktop sidebar and mobile navigation.
+- [x] Continuous audio playback engine with volume, progress seeking, and queue modes.
+- [x] Synchronized lyrics viewer with animated auto-scrolling.
+- [x] Real-time adaptive backdrop color extraction from artwork.
+- [x] JWT authentication with concurrency-safe silent refresh interceptors.
 - [x] Role-Based Access Control (`USER`, `ARTIST`, `ADMIN`).
-- [x] Liked songs and custom playlist management with optimistic mutations.
-- [x] Debounced multi-entity search for songs, artists, and albums.
-- [x] Artist Studio: song upload with audio files, cover artwork, and lyrics.
-- [x] Admin Console: artist application reviews and content moderation.
-- [x] Containerization with Docker and Nginx reverse proxy configuration.
+- [x] Debounced multi-entity search across songs, artists, and albums.
+- [x] Custom playlist creation and track manipulation.
+- [x] Artist Studio (audio upload, cover artwork, and lyrics).
+- [x] Admin Content Moderation and artist verification console.
+- [x] Production Dockerfile and Nginx SPA routing.
 
 ### In Progress
 
-- [ ] Collaborative real-time listening rooms with WebSockets.
-- [ ] Drag-and-drop song reordering inside playlists.
-- [ ] Offline audio caching using Service Workers and IndexedDB.
+- [ ] Drag-and-drop playlist reordering.
+- [ ] Offline audio playback using IndexedDB and Service Workers.
 
 ### Planned
 
-- [ ] HLS (HTTP Live Streaming) adaptive bitrate audio streaming.
-- [ ] Personalized recommendations powered by vector similarity search.
-- [ ] Social activity feed to follow what friends are currently listening to.
-- [ ] Artist monetization and simulated subscription tiers.
+- [ ] WebSockets for collaborative real-time listening rooms.
+- [ ] Adaptive bitrate audio streaming via HLS.
+- [ ] Equalizer audio customization filters.
 
 ---
 
 ## 13. Contributing
 
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-### How to Contribute
+Contributions are welcomed. To ensure quality:
 
 1. **Fork the Repository**
 2. **Create a Feature Branch:**
@@ -715,19 +567,19 @@ Contributions are what make the open source community such an amazing place to l
    ```
 3. **Commit your Changes:**
    ```bash
-   git commit -m "feat: Add amazing new feature"
+   git commit -m "feat: Add new audio visualization wave"
    ```
 4. **Push to the Branch:**
    ```bash
    git push origin feature/AmazingFeature
    ```
-5. **Open a Pull Request** describing your changes.
+5. **Open a Pull Request** describing your additions and test results.
 
 ### Code Guidelines
 
-- **TypeScript:** Strict type checking enabled; avoid using `any`.
-- **Code Quality:** Ensure `npm run typecheck`, `npm run lint`, and `npm test` pass before committing.
-- **Git Commits:** Follow conventional commit conventions (`feat:`, `fix:`, `refactor:`, `docs:`).
+- Strict TypeScript mode enabled; avoid `any`.
+- Adhere to the feature-sliced folder structure.
+- Verify that `npm run typecheck` and `npm run lint` pass cleanly before submitting PRs.
 
 ---
 
@@ -748,8 +600,8 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ## Acknowledgements
 
-- [Spotify Web Player](https://open.spotify.com) for visual and user experience inspiration.
-- [Lucide Icons](https://lucide.dev) for minimalist open-source iconography.
-- [Tailwind CSS](https://tailwindcss.com) for modern styling capabilities.
-- [TanStack Query](https://tanstack.com) for client asynchronous state management.
-- The open source communities behind React, Vite, and Spring Boot.
+- [Spotify Web Player](https://open.spotify.com) for visual and interaction design inspiration.
+- [Lucide Icons](https://lucide.dev) for lightweight iconography.
+- [Tailwind CSS](https://tailwindcss.com) for utility styling and modern tokens.
+- [TanStack](https://tanstack.com) and [Poimandres](https://github.com/pmndrs) for state and query tooling.
+- The open source communities behind React and Vite.
